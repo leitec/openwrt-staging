@@ -1,5 +1,5 @@
 #
-# Copyright (C) 2008-2011 OpenWrt.org
+# Copyright (C) 2008-2014 OpenWrt.org
 #
 # This is free software, licensed under the GNU General Public License v2.
 # See /LICENSE for more information.
@@ -13,7 +13,7 @@ FEATURES:=fpu usb pci squashfs
 CPU_TYPE:=601
 MAINTAINER:=Claudio Leite <leitec@staticky.com>
 
-LINUX_VERSION:=3.14.9
+LINUX_VERSION:=3.14.11
 
 include $(INCLUDE_DIR)/target.mk
 
