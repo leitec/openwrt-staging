@@ -32,6 +32,11 @@ brcm63xx_detect() {
 		status_led="96328avng::power"
 		ifname=eth0
 		;;
+	96328dg2x2)
+		brcm63xx_has_reset_button="true"
+		status_led="A4001N:green:power"
+		ifname="eth0"
+		;;
 	96328A-1241N)
 		brcm63xx_has_reset_button="true"
 		status_led="AR-5381u:green:power"
@@ -57,6 +62,16 @@ brcm63xx_detect() {
 		brcm63xx_has_reset_button="true"
 		ifname=eth0
 		;;
+	96368M-1341N)
+		brcm63xx_has_reset_button="true"
+		status_led="VR-3025un:green:power"
+		ifname="eth0"
+		;;
+	96368M-1541N)
+		brcm63xx_has_reset_button="true"
+		status_led="VR-3025u:green:power"
+		ifname="eth0"
+		;;
 	96369R-1231N)
 		brcm63xx_has_reset_button="true"
 		status_led="WAP-5813n:green:power"
@@ -69,6 +84,11 @@ brcm63xx_detect() {
 	AW4139 |\
 	AW4339U)
 		status_led="dsl-274xb:green:power"
+		brcm63xx_has_reset_button="true"
+		ifname=eth0
+		;;
+	AW5200B)
+		status_led="dsl-275xb:green:power"
 		brcm63xx_has_reset_button="true"
 		ifname=eth0
 		;;
@@ -121,9 +141,19 @@ brcm63xx_detect() {
 		brcm63xx_has_reset_button="true"
 		ifname=eth0
 		;;
+	HW6358GW_B)
+		status_led="HW520:green:net"
+		brcm63xx_has_reset_button="true"
+		ifname="eth0"
+		;;
 	NB6)
 		brcm63xx_has_reset_button="true"
 		ifname=eth0
+		;;
+	P870HW-51a_v2)
+		brcm63xx_has_reset_button="true"
+		status_led="P870HW-51a:green:power"
+		ifname="eth0"
 		;;
 	RTA770BW)
 		brcm63xx_has_reset_button="true"
