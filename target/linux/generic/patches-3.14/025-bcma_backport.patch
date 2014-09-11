@@ -327,6 +327,35 @@
  #include <linux/bcma/bcma_driver_mips.h>
  #include <linux/bcma/bcma_driver_gmac_cmn.h>
  #include <linux/ssb/ssb.h> /* SPROM sharing */
+@@ -72,17 +73,17 @@ struct bcma_host_ops {
+ /* Core-ID values. */
+ #define BCMA_CORE_OOB_ROUTER		0x367	/* Out of band */
+ #define BCMA_CORE_4706_CHIPCOMMON	0x500
+-#define BCMA_CORE_PCIEG2		0x501
+-#define BCMA_CORE_DMA			0x502
+-#define BCMA_CORE_SDIO3			0x503
+-#define BCMA_CORE_USB20			0x504
+-#define BCMA_CORE_USB30			0x505
+-#define BCMA_CORE_A9JTAG		0x506
+-#define BCMA_CORE_DDR23			0x507
+-#define BCMA_CORE_ROM			0x508
+-#define BCMA_CORE_NAND			0x509
+-#define BCMA_CORE_QSPI			0x50A
+-#define BCMA_CORE_CHIPCOMMON_B		0x50B
++#define BCMA_CORE_NS_PCIEG2		0x501
++#define BCMA_CORE_NS_DMA		0x502
++#define BCMA_CORE_NS_SDIO3		0x503
++#define BCMA_CORE_NS_USB20		0x504
++#define BCMA_CORE_NS_USB30		0x505
++#define BCMA_CORE_NS_A9JTAG		0x506
++#define BCMA_CORE_NS_DDR23		0x507
++#define BCMA_CORE_NS_ROM		0x508
++#define BCMA_CORE_NS_NAND		0x509
++#define BCMA_CORE_NS_QSPI		0x50A
++#define BCMA_CORE_NS_CHIPCOMMON_B	0x50B
+ #define BCMA_CORE_4706_SOC_RAM		0x50E
+ #define BCMA_CORE_ARMCA9		0x510
+ #define BCMA_CORE_4706_MAC_GBIT		0x52D
 @@ -157,6 +158,9 @@ struct bcma_host_ops {
  /* Chip IDs of PCIe devices */
  #define BCMA_CHIP_ID_BCM4313	0x4313
@@ -506,3 +535,175 @@
 +void bcma_core_pcie2_init(struct bcma_drv_pcie2 *pcie2);
 +
 +#endif /* LINUX_BCMA_DRIVER_PCIE2_H_ */
+--- a/drivers/bcma/scan.c
++++ b/drivers/bcma/scan.c
+@@ -32,17 +32,17 @@ static const struct bcma_device_id_name
+ 	{ BCMA_CORE_4706_CHIPCOMMON, "BCM4706 ChipCommon" },
+ 	{ BCMA_CORE_4706_SOC_RAM, "BCM4706 SOC RAM" },
+ 	{ BCMA_CORE_4706_MAC_GBIT, "BCM4706 GBit MAC" },
+-	{ BCMA_CORE_PCIEG2, "PCIe Gen 2" },
+-	{ BCMA_CORE_DMA, "DMA" },
+-	{ BCMA_CORE_SDIO3, "SDIO3" },
+-	{ BCMA_CORE_USB20, "USB 2.0" },
+-	{ BCMA_CORE_USB30, "USB 3.0" },
+-	{ BCMA_CORE_A9JTAG, "ARM Cortex A9 JTAG" },
+-	{ BCMA_CORE_DDR23, "Denali DDR2/DDR3 memory controller" },
+-	{ BCMA_CORE_ROM, "ROM" },
+-	{ BCMA_CORE_NAND, "NAND flash controller" },
+-	{ BCMA_CORE_QSPI, "SPI flash controller" },
+-	{ BCMA_CORE_CHIPCOMMON_B, "Chipcommon B" },
++	{ BCMA_CORE_NS_PCIEG2, "PCIe Gen 2" },
++	{ BCMA_CORE_NS_DMA, "DMA" },
++	{ BCMA_CORE_NS_SDIO3, "SDIO3" },
++	{ BCMA_CORE_NS_USB20, "USB 2.0" },
++	{ BCMA_CORE_NS_USB30, "USB 3.0" },
++	{ BCMA_CORE_NS_A9JTAG, "ARM Cortex A9 JTAG" },
++	{ BCMA_CORE_NS_DDR23, "Denali DDR2/DDR3 memory controller" },
++	{ BCMA_CORE_NS_ROM, "ROM" },
++	{ BCMA_CORE_NS_NAND, "NAND flash controller" },
++	{ BCMA_CORE_NS_QSPI, "SPI flash controller" },
++	{ BCMA_CORE_NS_CHIPCOMMON_B, "Chipcommon B" },
+ 	{ BCMA_CORE_ARMCA9, "ARM Cortex A9 core (ihost)" },
+ 	{ BCMA_CORE_AMEMC, "AMEMC (DDR)" },
+ 	{ BCMA_CORE_ALTA, "ALTA (I2S)" },
+@@ -421,10 +421,13 @@ static int bcma_get_next_core(struct bcm
+ 		core->io_addr = ioremap_nocache(core->addr, BCMA_CORE_SIZE);
+ 		if (!core->io_addr)
+ 			return -ENOMEM;
+-		core->io_wrap = ioremap_nocache(core->wrap, BCMA_CORE_SIZE);
+-		if (!core->io_wrap) {
+-			iounmap(core->io_addr);
+-			return -ENOMEM;
++		if (core->wrap) {
++			core->io_wrap = ioremap_nocache(core->wrap,
++							BCMA_CORE_SIZE);
++			if (!core->io_wrap) {
++				iounmap(core->io_addr);
++				return -ENOMEM;
++			}
+ 		}
+ 	}
+ 	return 0;
+--- a/drivers/bcma/host_soc.c
++++ b/drivers/bcma/host_soc.c
+@@ -134,12 +134,16 @@ static void bcma_host_soc_block_write(st
+ 
+ static u32 bcma_host_soc_aread32(struct bcma_device *core, u16 offset)
+ {
++	if (WARN_ONCE(!core->io_wrap, "Accessed core has no wrapper/agent\n"))
++		return ~0;
+ 	return readl(core->io_wrap + offset);
+ }
+ 
+ static void bcma_host_soc_awrite32(struct bcma_device *core, u16 offset,
+ 				  u32 value)
+ {
++	if (WARN_ONCE(!core->io_wrap, "Accessed core has no wrapper/agent\n"))
++		return;
+ 	writel(value, core->io_wrap + offset);
+ }
+ 
+--- a/drivers/bcma/driver_mips.c
++++ b/drivers/bcma/driver_mips.c
+@@ -21,6 +21,14 @@
+ #include <linux/serial_reg.h>
+ #include <linux/time.h>
+ 
++enum bcma_boot_dev {
++	BCMA_BOOT_DEV_UNK = 0,
++	BCMA_BOOT_DEV_ROM,
++	BCMA_BOOT_DEV_PARALLEL,
++	BCMA_BOOT_DEV_SERIAL,
++	BCMA_BOOT_DEV_NAND,
++};
++
+ static const char * const part_probes[] = { "bcm47xxpart", NULL };
+ 
+ static struct physmap_flash_data bcma_pflash_data = {
+@@ -229,11 +237,51 @@ u32 bcma_cpu_clock(struct bcma_drv_mips
+ }
+ EXPORT_SYMBOL(bcma_cpu_clock);
+ 
++static enum bcma_boot_dev bcma_boot_dev(struct bcma_bus *bus)
++{
++	struct bcma_drv_cc *cc = &bus->drv_cc;
++	u8 cc_rev = cc->core->id.rev;
++
++	if (cc_rev == 42) {
++		struct bcma_device *core;
++
++		core = bcma_find_core(bus, BCMA_CORE_NS_ROM);
++		if (core) {
++			switch (bcma_aread32(core, BCMA_IOST) &
++				BCMA_NS_ROM_IOST_BOOT_DEV_MASK) {
++			case BCMA_NS_ROM_IOST_BOOT_DEV_NOR:
++				return BCMA_BOOT_DEV_SERIAL;
++			case BCMA_NS_ROM_IOST_BOOT_DEV_NAND:
++				return BCMA_BOOT_DEV_NAND;
++			case BCMA_NS_ROM_IOST_BOOT_DEV_ROM:
++			default:
++				return BCMA_BOOT_DEV_ROM;
++			}
++		}
++	} else {
++		if (cc_rev == 38) {
++			if (cc->status & BCMA_CC_CHIPST_5357_NAND_BOOT)
++				return BCMA_BOOT_DEV_NAND;
++			else if (cc->status & BIT(5))
++				return BCMA_BOOT_DEV_ROM;
++		}
++
++		if ((cc->capabilities & BCMA_CC_CAP_FLASHT) ==
++		    BCMA_CC_FLASHT_PARA)
++			return BCMA_BOOT_DEV_PARALLEL;
++		else
++			return BCMA_BOOT_DEV_SERIAL;
++	}
++
++	return BCMA_BOOT_DEV_SERIAL;
++}
++
+ static void bcma_core_mips_flash_detect(struct bcma_drv_mips *mcore)
+ {
+ 	struct bcma_bus *bus = mcore->core->bus;
+ 	struct bcma_drv_cc *cc = &bus->drv_cc;
+ 	struct bcma_pflash *pflash = &cc->pflash;
++	enum bcma_boot_dev boot_dev;
+ 
+ 	switch (cc->capabilities & BCMA_CC_CAP_FLASHT) {
+ 	case BCMA_CC_FLASHT_STSER:
+@@ -269,6 +317,20 @@ static void bcma_core_mips_flash_detect(
+ 			bcma_nflash_init(cc);
+ 		}
+ 	}
++
++	/* Determine flash type this SoC boots from */
++	boot_dev = bcma_boot_dev(bus);
++	switch (boot_dev) {
++	case BCMA_BOOT_DEV_PARALLEL:
++	case BCMA_BOOT_DEV_SERIAL:
++		/* TODO: Init NVRAM using BCMA_SOC_FLASH2 window */
++		break;
++	case BCMA_BOOT_DEV_NAND:
++		/* TODO: Init NVRAM using BCMA_SOC_FLASH1 window */
++		break;
++	default:
++		break;
++	}
+ }
+ 
+ void bcma_core_mips_early_init(struct bcma_drv_mips *mcore)
+--- a/include/linux/bcma/bcma_regs.h
++++ b/include/linux/bcma/bcma_regs.h
+@@ -39,6 +39,11 @@
+ #define  BCMA_RESET_CTL_RESET		0x0001
+ #define BCMA_RESET_ST			0x0804
+ 
++#define BCMA_NS_ROM_IOST_BOOT_DEV_MASK	0x0003
++#define BCMA_NS_ROM_IOST_BOOT_DEV_NOR	0x0000
++#define BCMA_NS_ROM_IOST_BOOT_DEV_NAND	0x0001
++#define BCMA_NS_ROM_IOST_BOOT_DEV_ROM	0x0002
++
+ /* BCMA PCI config space registers. */
+ #define BCMA_PCI_PMCSR			0x44
+ #define  BCMA_PCI_PE			0x100

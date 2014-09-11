@@ -8,12 +8,12 @@ include $(TOPDIR)/rules.mk
 
 ARCH:=arm
 BOARD:=bcm53xx
-BOARDNAME:=Broadcom BCM47xx/53xx with ARM CPU
+BOARDNAME:=Broadcom BCM47xx/53xx (ARM)
 FEATURES:=squashfs usb pci pcie gpio
 MAINTAINER:=Hauke Mehrtens <hauke@hauke-m.de>
 CPU_TYPE:=cortex-a9
 
-LINUX_VERSION:=3.14.16
+LINUX_VERSION:=3.14.18
 
 include $(INCLUDE_DIR)/target.mk
 

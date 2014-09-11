@@ -33,7 +33,7 @@ tools-$(CONFIG_TARGET_orion_generic) += wrt350nv2-builder upslug2
 tools-$(CONFIG_powerpc) += upx
 tools-$(CONFIG_TARGET_x86) += qemu
 tools-$(CONFIG_TARGET_mxs) += elftosb
-tools-$(CONFIG_TARGET_brcm2708) += mtools dosfstools
+tools-$(CONFIG_TARGET_brcm2708)$(CONFIG_TARGET_sunxi) += mtools dosfstools
 tools-$(CONFIG_TARGET_ar71xx) += lzma-old squashfs
 tools-y += lzma squashfs4
 tools-$(BUILD_B43_TOOLS) += b43-tools
@@ -44,7 +44,7 @@ tools-$(CONFIG_USE_SPARSE) += sparse
 $(curdir)/bison/compile := $(curdir)/flex/install
 $(curdir)/flex/compile := $(curdir)/automake/install
 $(curdir)/pkg-config/compile := $(curdir)/sed/install
-$(curdir)/libtool/compile := $(curdir)/sed/install
+$(curdir)/libtool/compile := $(curdir)/sed/install $(curdir)/m4/install
 $(curdir)/squashfs/compile := $(curdir)/lzma-old/install
 $(curdir)/squashfs4/compile := $(curdir)/xz/install
 $(curdir)/quilt/compile := $(curdir)/sed/install $(curdir)/autoconf/install $(curdir)/findutils/install
@@ -71,6 +71,7 @@ $(curdir)/sdcc/compile := $(curdir)/bison/install
 $(curdir)/b43-tools/compile := $(curdir)/bison/install
 $(curdir)/padjffs2/compile := $(curdir)/findutils/install
 $(curdir)/cloog/compile := $(curdir)/ppl/install
+$(curdir)/bc/compile := $(curdir)/bison/install
 
 ifneq ($(CONFIG_CCACHE),)
 $(foreach tool, $(tools-y), $(eval $(curdir)/$(tool)/compile += $(curdir)/ccache/install))
