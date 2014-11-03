@@ -66,6 +66,12 @@ db120)
 	ucidef_set_led_usbdev "usb" "USB" "db120:green:usb" "1-1"
 	;;
 
+dragino2)
+	ucidef_set_led_wlan "wlan" "WLAN" "dragino2:red:wlan" "phy0tpt"
+	ucidef_set_led_netdev "lan" "LAN" "dragino2:red:lan" "eth0"
+	ucidef_set_led_netdev "wan" "WAN" "dragino2:red:wan" "eth1"
+	;;
+
 eap300v2)
 	ucidef_set_led_netdev "lan" "LAN" "engenius:blue:lan" "eth0"
 	ucidef_set_led_wlan "wlan" "WLAN" "engenius:blue:wlan" "phy0tpt"
@@ -123,6 +129,11 @@ gl-inet)
 esr900)
 	ucidef_set_led_wlan "wlan2g" "WLAN 2.4 GHz" "engenius:blue:wlan-2g" "phy0tpt"
 	ucidef_set_led_wlan "wlan5g" "WLAN 5 GHz" "engenius:blue:wlan-5g" "phy1tpt"
+	;;
+
+esr1750)
+	ucidef_set_led_wlan "wlan2g" "WLAN 2.4 GHz" "esr1750:blue:wlan-2g" "phy0tpt"
+	ucidef_set_led_wlan "wlan5g" "WLAN 5 GHz" "esr1750:blue:wlan-5g" "phy1tpt"
 	;;
 
 hiwifi-hc6361)

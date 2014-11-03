@@ -13,9 +13,9 @@ FEATURES:=squashfs pci
 CPU_TYPE:=fa526
 MAINTAINER:=Imre Kaloz <kaloz@openwrt.org>
 
-LINUX_VERSION:=3.10.49
+KERNEL_PATCHVER:=3.10
 
-KERNELNAME:="zImage"
+KERNELNAME:=zImage
 
 include $(INCLUDE_DIR)/target.mk
 

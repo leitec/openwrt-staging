@@ -468,14 +468,14 @@ ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
   LD_MUSL_NAME = $(notdir $(firstword $(wildcard $(TOOLCHAIN_DIR)/lib/ld-musl-*.so*)))
 
   define Package/musl/install
-	$(INSTALL_DIR) $(1)/lib
+	$(INSTALL_DIR) $(1)/lib $(1)/usr/bin
 	$(CP) \
 		$(TOOLCHAIN_DIR)/lib/ld-musl-*.so* \
 		$(1)/lib/
 	$(CP) \
 		$(TOOLCHAIN_DIR)/lib/libc.so* \
 		$(1)/lib/
-	$(if $(findstring -sf.so,$(LD_MUSL_NAME)),ln -s $(LD_MUSL_NAME) $(1)/lib/$(subst -sf.so,.so,$(LD_MUSL_NAME)))
+	ln -s ../../lib/$(LD_MUSL_NAME) $(1)/usr/bin/ldd
   endef
 
   define Package/libc/install
@@ -508,7 +508,7 @@ ifeq ($(CONFIG_EXTERNAL_TOOLCHAIN),)
 	$(INSTALL_DIR) $(1)/lib
 	$(CP) \
 		$(TOOLCHAIN_DIR)/lib/libthread_db.so.* $(1)/lib
-  ifeq ($(USE_UCLIBC),y)
+  ifeq ($(CONFIG_USE_UCLIBC),y)
 	$(CP) \
 		$(TOOLCHAIN_DIR)/lib/libthread_db-$(LIBC_SO_VERSION).so \
 		$(1)/lib/

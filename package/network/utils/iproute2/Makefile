@@ -31,7 +31,11 @@ define Package/iproute2/Default
   VARIANT:=$(1)
 endef
 
-Package/ip=$(call Package/iproute2/Default,tiny,Minimal)
+define Package/ip
+$(call Package/iproute2/Default,tiny,Minimal)
+  CONFLICTS:=ip-full
+endef
+
 Package/ip-full=$(call Package/iproute2/Default,full,Full)
 
 define Package/ip/conffiles
@@ -76,6 +80,9 @@ ifdef CONFIG_USE_EGLIBC
   ifndef CONFIG_EGLIBC_VERSION_2_13
     TARGET_CFLAGS += -DHAVE_SETNS
   endif
+endif
+ifdef CONFIG_USE_MUSL
+  TARGET_CFLAGS += -DHAVE_SETNS
 endif
 
 TARGET_CFLAGS += -ffunction-sections -fdata-sections
