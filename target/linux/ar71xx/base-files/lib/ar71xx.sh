@@ -145,11 +145,14 @@ tplink_board_detect() {
 	"085000"*)
 		model="TP-Link TL-WA850RE"
 		;;
+	"086000"*)
+		model="TP-Link TL-WA860RE"
+		;;
 	"090100"*)
 		model="TP-Link TL-WA901N/ND"
 		;;
 	"094100"*)
-		if [ "$hwid" == "09410002" -a "$mid" == "00420001" ]; then
+		if [ "$hwid" = "09410002" -a "$mid" = "00420001" ]; then
 			model="Rosewill RNX-N360RT"
 			hwver=""
 		else
@@ -208,6 +211,16 @@ tplink_board_detect() {
 	"453000"*)
 		model="MERCURY MW4530R"
 		;;
+	"934100"*)
+		model="NC-LINK SMART-300"
+		;;
+	"c50000"*)
+		model="TP-Link Archer C5"
+		;;
+	"750000"*|\
+	"c70000"*)
+		model="TP-Link Archer C7"
+		;;
 	*)
 		hwver=""
 		;;
@@ -225,6 +238,9 @@ ar71xx_board_detect() {
 	case "$machine" in
 	*"Oolite V1.0")
 		name="oolite"
+		;;
+	*"AirGateway")
+		name="airgateway"
 		;;
 	*"AirRouter")
 		name="airrouter"
@@ -271,6 +287,9 @@ ar71xx_board_detect() {
 	*AP83)
 		name="ap83"
 		;;
+	*"Archer C5")
+		name="archer-c5"
+		;;
 	*"Archer C7")
 		name="archer-c7"
 		;;
@@ -310,6 +329,9 @@ ar71xx_board_detect() {
 	*"Dragino v2")
 		name="dragino2"
 		;;
+	*"EAP300 v2")
+		name="eap300v2"
+		;;
 	*EAP7660D)
 		name="eap7660d"
 		;;
@@ -318,6 +340,15 @@ ar71xx_board_detect() {
 		;;
 	*EL-MINI)
 		name="el-mini"
+		;;
+	*"GL-CONNECT INET v1")
+		name="gl-inet"
+		;;
+	*"EnGenius ESR1750")
+		name="esr1750"
+		;;
+	*"EnGenius ESR900")
+		name="esr900"
 		;;
 	*JA76PF)
 		name="ja76pf"
@@ -328,8 +359,14 @@ ar71xx_board_detect() {
 	*"Bullet M")
 		name="bullet-m"
 		;;
+	*"Loco M XW")
+		name="loco-m-xw"
+		;;
 	*"Nanostation M")
 		name="nanostation-m"
+		;;
+	*"Nanostation M XW")
+		name="nanostation-m-xw"
 		;;
 	*JWAP003)
 		name="jwap003"
@@ -391,6 +428,9 @@ ar71xx_board_detect() {
 	*"OM2P LC")
 		name="om2p-lc"
 		;;
+	*OM5P)
+		name="om5p"
+		;;
 	*PB42)
 		name="pb42"
 		;;
@@ -399,6 +439,9 @@ ar71xx_board_detect() {
 		;;
 	*PB92)
 		name="pb92"
+		;;
+	*"Qihoo 360 C301")
+		name="qihoo-c301"
 		;;
 	*"RouterBOARD 411/A/AH")
 		name="rb-411"
@@ -463,8 +506,14 @@ ar71xx_board_detect() {
 	*"RouterBOARD 2011UAS")
 		name="rb-2011uas"
 		;;
+	*"RouterBOARD 2011UiAS")
+		name="rb-2011uias"
+		;;
 	*"RouterBOARD 2011UAS-2HnD")
 		name="rb-2011uas-2hnd"
+		;;
+	*"RouterBOARD 2011UiAS-2HnD")
+		name="rb-2011uias-2hnd"
 		;;
 	*"RouterBOARD SXT Lite2")
 		name="rb-sxt2n"
@@ -483,6 +532,9 @@ ar71xx_board_detect() {
 		;;
 	*RW2458N)
 		name="rw2458n"
+		;;
+	*"SMART-300")
+		name="smart-300"
 		;;
 	*TEW-632BRP)
 		name="tew-632brp"
@@ -540,6 +592,9 @@ ar71xx_board_detect() {
 		;;
 	*TL-WA850RE)
 		name="tl-wa850re"
+		;;
+	*"TL-WA830RE v2")
+		name="tl-wa830re-v2"
 		;;
 	*"TL-WA801ND v2")
 		name="tl-wa801nd-v2"
@@ -604,6 +659,9 @@ ar71xx_board_detect() {
 	*"TL-MR13U")
 		name="tl-mr13u"
 		;;
+	*"Tube2H")
+		name="tube2h"
+		;;
 	*UniFi)
 		name="unifi"
 		;;
@@ -634,8 +692,14 @@ ar71xx_board_detect() {
 	*"WNDR3700/WNDR3800/WNDRMAC")
 		wndr3700_board_detect "$machine"
 		;;
+	*"WNDR3700v4")
+		name="wndr3700v4"
+		;;
 	*"WNDR4300")
 		name="wndr4300"
+		;;
+	*"WNR2000 V4")
+		name="wnr2000-v4"
 		;;
 	*"WNR2000 V3")
 		name="wnr2000-v3"
@@ -654,6 +718,9 @@ ar71xx_board_detect() {
 		;;
 	*WRT400N)
 		name="wrt400n"
+		;;
+	*"WZR-450HP2")
+		name="wzr-450hp2"
 		;;
 	*"WZR-HP-AG300H/WZR-600DHP")
 		name="wzr-hp-ag300h"
@@ -696,11 +763,7 @@ ar71xx_board_detect() {
 		;;
 	esac
 
-	case "$machine" in
-	*TL-WR* | *TL-WA* | *TL-MR* | *TL-WD*)
-		tplink_board_detect "$machine"
-		;;
-	esac
+	[ "${machine:0:8}" = 'TP-LINK ' ] && tplink_board_detect "$machine"
 
 	[ -z "$name" ] && name="unknown"
 

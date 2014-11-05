@@ -769,6 +769,24 @@ void __init ath79_setup_ar934x_eth_cfg(u32 mask)
 	iounmap(base);
 }
 
+void __init ath79_setup_qca955x_eth_cfg(u32 mask)
+{
+	void __iomem *base;
+	u32 t;
+
+	base = ioremap(QCA955X_GMAC_BASE, QCA955X_GMAC_SIZE);
+
+	t = __raw_readl(base + QCA955X_GMAC_REG_ETH_CFG);
+
+	t &= ~(QCA955X_ETH_CFG_RGMII_EN | QCA955X_ETH_CFG_GE0_SGMII);
+
+	t |= mask;
+
+	__raw_writel(t, base + QCA955X_GMAC_REG_ETH_CFG);
+
+	iounmap(base);
+}
+
 static int ath79_eth_instance __initdata;
 void __init ath79_register_eth(unsigned int id)
 {
@@ -922,13 +940,13 @@ void __init ath79_register_eth(unsigned int id)
 			pdata->set_speed = ath79_set_speed_dummy;
 
 			pdata->speed = SPEED_1000;
+			pdata->has_gbit = 1;
 			pdata->duplex = DUPLEX_FULL;
 			pdata->switch_data = &ath79_switch_data;
 
 			ath79_switch_data.phy_poll_mask |= BIT(4);
 		}
 
-		pdata->has_gbit = 1;
 		pdata->is_ar724x = 1;
 
 		if (!pdata->fifo_cfg1)

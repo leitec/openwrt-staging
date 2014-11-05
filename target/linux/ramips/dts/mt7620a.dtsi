@@ -349,7 +349,7 @@
 		#reset-cells = <1>;
 	};
 
-	ubsphy {
+	usbphy {
 		compatible = "ralink,mt7620a-usbphy";
 
 		resets = <&rstctrl 22 &rstctrl 25>;
@@ -441,6 +441,11 @@
 		interrupts = <4>;
 
 		status = "disabled";
+
+		pcie-bridge {
+			reg = <0x0000 0 0 0 0>;
+			device_type = "pci";
+		};
 	};
 
 	wmac@10180000 {

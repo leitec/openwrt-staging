@@ -7,7 +7,7 @@
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
-NAND_BLOCKSIZE := 2048:128k
+NAND_BLOCKSIZE := 2048-128k
 
 define sanitize_profile_name
 $(shell echo $(PROFILE) | tr '[:upper:]' '[:lower:]')
@@ -34,7 +34,7 @@ define Image/BuildKernel/Template
  endif
 
  ifneq ($(1),)
-	$(CP) $(LINUX_DIR)/arch/arm/boot/dts/kirkwood-$(1).dtb $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb
+	$(CP) $(DTS_DIR)/kirkwood-$(1).dtb $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb
 
 	$(CP) $(KDIR)/zImage $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage
 	cat $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb >> $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage

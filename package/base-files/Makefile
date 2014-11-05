@@ -11,10 +11,11 @@ include $(INCLUDE_DIR)/version.mk
 include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=base-files
-PKG_RELEASE:=155
+PKG_RELEASE:=156
 
 PKG_FILE_DEPENDS:=$(PLATFORM_DIR)/ $(GENERIC_PLATFORM_DIR)/base-files/
 PKG_BUILD_DEPENDS:=opkg/host
+PKG_LICENSE:=GPL-2.0
 
 include $(INCLUDE_DIR)/package.mk
 
@@ -110,8 +111,11 @@ define Package/base-files/install
 
 	$(VERSION_SED) \
 		$(1)/etc/banner \
-		$(1)/etc/openwrt_version \
-		$(1)/etc/openwrt_release
+		$(1)/etc/openwrt_version
+
+	$(VERSION_SED_SCRIPT) \
+		$(1)/etc/openwrt_release \
+		$(1)/etc/device_info
 
 	mkdir -p $(1)/CONTROL
 	mkdir -p $(1)/dev

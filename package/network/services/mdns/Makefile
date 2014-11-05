@@ -8,16 +8,17 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=mdns
-PKG_VERSION:=2014-06-25
+PKG_VERSION:=2014-11-03
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
 PKG_SOURCE_URL:=git://git.openwrt.org/project/mdnsd.git
 PKG_SOURCE_PROTO:=git
-PKG_SOURCE_VERSION:=902e2d1eaaff0d3d33dee605a4746fd5d4b6b999
+PKG_SOURCE_VERSION:=a5560f88bb2cddeef0ef11a12e7822b9c19a75a5
 
 PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>
+PKG_LICENSE:=LGPL-2.1
 
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk

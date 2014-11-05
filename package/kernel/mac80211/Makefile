@@ -10,11 +10,11 @@ include $(INCLUDE_DIR)/kernel.mk
 
 PKG_NAME:=mac80211
 
-PKG_VERSION:=2014-05-22
+PKG_VERSION:=2014-10-08
 PKG_RELEASE:=1
 PKG_SOURCE_URL:=http://mirror2.openwrt.org/sources
 PKG_BACKPORT_VERSION:=
-PKG_MD5SUM:=367937d4f8c05cb36ca989ee26abc3df
+PKG_MD5SUM:=20e9de70e63fd9649d61d4670a9cc1bd
 
 PKG_SOURCE:=compat-wireless-$(PKG_VERSION)$(PKG_BACKPORT_VERSION).tar.bz2
 PKG_BUILD_DIR:=$(KERNEL_BUILD_DIR)/compat-wireless-$(PKG_VERSION)
@@ -28,7 +28,7 @@ PKG_DRIVERS = \
 	rt2500-usb rt61-pci rt73-usb rt2800-mmio rt2800-pci rt2800-usb rt2800-soc \
 	rtl8180 rtl8187 zd1211rw mac80211-hwsim carl9170 b43 b43legacy \
 	ath9k-common ath9k ath9k-htc ath10k ath net-libipw net-ipw2100 net-ipw2200 \
-	mwl8k net-hermes net-hermes-pci net-hermes-plx net-hermes-pcmcia \
+	mwl8k mwifiex-pcie net-hermes net-hermes-pci net-hermes-plx net-hermes-pcmcia \
 	iwl-legacy iwl3945 iwl4965 iwlagn wlcore wl12xx wl18xx lib80211 \
 	rtlwifi rtlwifi-pci rtlwifi-usb rtl8192c-common rtl8192ce rtl8192se \
 	rtl8192de rtl8192cu
@@ -42,7 +42,13 @@ PKG_CONFIG_DEPENDS:= \
 	CONFIG_PACKAGE_ATH_DFS \
 	CONFIG_PACKAGE_B43_DEBUG \
 	CONFIG_PACKAGE_B43_PIO \
-	CONFIG_PACKAGE_B43_N_PHY \
+	CONFIG_PACKAGE_B43_PHY_G \
+	CONFIG_PACKAGE_B43_PHY_N \
+	CONFIG_PACKAGE_B43_PHY_LP \
+	CONFIG_PACKAGE_B43_PHY_HT \
+	CONFIG_PACKAGE_B43_BUSES_BCMA_AND_SSB \
+	CONFIG_PACKAGE_B43_BUSES_BCMA \
+	CONFIG_PACKAGE_B43_BUSES_SSB \
 	CONFIG_PACKAGE_RTLWIFI_DEBUG \
 	CONFIG_ATH_USER_REGD \
 
@@ -123,7 +129,7 @@ endef
 $(eval $(call Download,linux-firmware))
 
 PKG_ATH10K_LINUX_FIRMWARE_NAME:=ath10k-firmware
-PKG_ATH10K_LINUX_FIRMWARE_VERSION:=38eeda3ae6f90fde5546bdd48ee4ff3090f238c0
+PKG_ATH10K_LINUX_FIRMWARE_VERSION:=232b419e71dab27b52b96e80ea7649ed67bdac77
 PKG_ATH10K_LINUX_FIRMWARE_SOURCE:=$(PKG_ATH10K_LINUX_FIRMWARE_NAME)-$(PKG_ATH10K_LINUX_FIRMWARE_VERSION).tar.bz2
 PKG_ATH10K_LINUX_FIRMWARE_PROTO:=git
 PKG_ATH10K_LINUX_FIRMWARE_SOURCE_URL:=https://github.com/kvalo/ath10k-firmware.git
@@ -515,12 +521,12 @@ define KernelPackage/ath/config
 
 	config PACKAGE_ATH_DFS
 		bool "Enable DFS support"
+		default y
 		help
 		  Dynamic frequency selection (DFS) is required for most of the 5 GHz band
 		  channels in Europe, US, and Japan.
 
-		  Select this option if you want to use such channels. Only EU (ETSI) DFS
-		  is supported at the moment.
+		  Select this option if you want to use such channels.
 
   endif
 endef
@@ -686,7 +692,7 @@ endef
 define KernelPackage/mac80211-hwsim
   $(call KernelPackage/mac80211/Default)
   TITLE:=mac80211 HW simulation device
-  DEPENDS+= +kmod-mac80211
+  DEPENDS+= +kmod-mac80211 +@DRIVER_11N_SUPPORT
   FILES:=$(PKG_BUILD_DIR)/drivers/net/wireless/mac80211_hwsim.ko
   AUTOLOAD:=$(call AutoProbe,mac80211_hwsim)
 endef
@@ -976,6 +982,22 @@ define KernelPackage/mwl8k/description
 endef
 
 
+define KernelPackage/mwifiex-pcie
+  $(call KernelPackage/mac80211/Default)
+  TITLE:=Driver for Marvell 802.11n/802.11ac PCIe Wireless cards
+  URL:=http://wireless.kernel.org/en/users/Drivers/mwifiex
+  DEPENDS+= @PCI_SUPPORT +kmod-mac80211 +@DRIVER_11N_SUPPORT
+  FILES:= \
+	$(PKG_BUILD_DIR)/drivers/net/wireless/mwifiex/mwifiex.ko \
+	$(PKG_BUILD_DIR)/drivers/net/wireless/mwifiex/mwifiex_pcie.ko
+  AUTOLOAD:=$(call AutoProbe,mwifiex_pcie)
+endef
+
+define KernelPackage/mwifiex-pcie/description
+ Kernel modules for Marvell 802.11n/802.11ac PCIe Wireless cards
+endef
+
+
 define KernelPackage/wlcore
   $(call KernelPackage/mac80211/Default)
   TITLE:=TI common driver part
@@ -1200,7 +1222,8 @@ config PACKAGE_B43_USE_BCMA
 		string "Core revisions to include"
 		depends on B43_FW_SQUASH
 		default "5,6,7,8,9,10,11,13,15" if TARGET_brcm47xx_legacy
-		default "5,6,7,8,9,10,11,13,15,16,29"
+		default "16,28,29,30" if TARGET_brcm47xx_mips74k
+		default "5,6,7,8,9,10,11,13,15,16,28,29,30"
 		help
 		  This is a comma seperated list of core revision numbers.
 
@@ -1214,6 +1237,7 @@ config PACKAGE_B43_USE_BCMA
 		string "PHY types to include"
 		depends on B43_FW_SQUASH
 		default "G,LP" if TARGET_brcm47xx_legacy
+		default "N,HT" if TARGET_brcm47xx_mips74k
 		default "G,LP,N,HT"
 		help
 		  This is a comma seperated list of PHY types:
@@ -1224,6 +1248,8 @@ config PACKAGE_B43_USE_BCMA
 		    N  => N-PHY
 		    HT  => HT-PHY
 		    LCN  => LCN-PHY
+		    LCN40  => LCN40-PHY
+		    AC  => AC-PHY
 
 		  Example (keep files for G-PHY only):
 		    G
@@ -1238,7 +1264,7 @@ config PACKAGE_B43_USE_BCMA
 		  This allows choosing buses that b43 should support.
 
 	config PACKAGE_B43_BUSES_BCMA_AND_SSB
-		depends on !TARGET_brcm47xx_legacy
+		depends on !TARGET_brcm47xx_legacy && !TARGET_brcm47xx_mips74k
 		bool "BCMA and SSB"
 
 	config PACKAGE_B43_BUSES_BCMA
@@ -1246,6 +1272,7 @@ config PACKAGE_B43_USE_BCMA
 		bool "BCMA only"
 
 	config PACKAGE_B43_BUSES_SSB
+		depends on !TARGET_brcm47xx_mips74k
 		bool "SSB only"
 
 	endchoice
@@ -1268,6 +1295,17 @@ config PACKAGE_B43_USE_BCMA
 
 		  If unsure, say N.
 
+	config PACKAGE_B43_PHY_G
+		bool "Enable support for G-PHYs"
+		default n if TARGET_brcm47xx_mips74k
+		default y
+		help
+		  Enable support for G-PHY. This includes support for the following devices:
+		  PCI: BCM4306, BCM4311, BCM4318
+		  SoC: BCM5352E, BCM4712
+
+		  If unsure, say Y.
+
 	config PACKAGE_B43_PHY_N
 		bool "Enable support for N-PHYs"
 		default n if TARGET_brcm47xx_legacy
@@ -1283,6 +1321,7 @@ config PACKAGE_B43_USE_BCMA
 
 	config PACKAGE_B43_PHY_LP
 		bool "Enable support for LP-PHYs"
+		default n if TARGET_brcm47xx_mips74k
 		default y
 		help
 		  Enable support for LP-PHY. This includes support for the following devices:
@@ -1505,6 +1544,7 @@ config-$(call config_package,b43) += B43
 config-$(CONFIG_PACKAGE_B43_BUSES_BCMA_AND_SSB) += B43_BUSES_BCMA_AND_SSB
 config-$(CONFIG_PACKAGE_B43_BUSES_BCMA) += B43_BUSES_BCMA
 config-$(CONFIG_PACKAGE_B43_BUSES_SSB) += B43_BUSES_SSB
+config-$(CONFIG_PACKAGE_B43_PHY_G) += B43_PHY_G
 config-$(CONFIG_PACKAGE_B43_PHY_N) += B43_PHY_N
 config-$(CONFIG_PACKAGE_B43_PHY_LP) += B43_PHY_LP
 config-$(CONFIG_PACKAGE_B43_PHY_HT) += B43_PHY_HT
@@ -1568,6 +1608,7 @@ config-$(call config_package,adm8211) += ADM8211
 config-$(call config_package,libertas-sd) += LIBERTAS LIBERTAS_SDIO
 config-$(call config_package,libertas-usb) += LIBERTAS LIBERTAS_USB
 config-$(call config_package,mwl8k) += MWL8K
+config-$(call config_package,mwifiex-pcie) += MWIFIEX MWIFIEX_PCIE
 config-$(call config_package,rtl8180) += RTL8180
 config-$(call config_package,rtl8187) += RTL8187
 config-$(call config_package,wlcore) += WLCORE WLCORE_SDIO
@@ -1780,18 +1821,17 @@ endef
 
 define KernelPackage/ath10k/install
 	$(INSTALL_DIR) $(1)/lib/firmware/ath10k/QCA988X/hw2.0
-ifeq ($(CONFIG_ATH10K_STA_FW),y)
 	$(INSTALL_DATA) \
 		$(PKG_BUILD_DIR)/$(PKG_ATH10K_LINUX_FIRMWARE_SUBDIR)/ath10k/QCA988X/hw2.0/board.bin \
 		$(1)/lib/firmware/ath10k/QCA988X/hw2.0/
+ifeq ($(CONFIG_ATH10K_STA_FW),y)
 	$(INSTALL_DATA) \
 		$(PKG_BUILD_DIR)/$(PKG_ATH10K_LINUX_FIRMWARE_SUBDIR)/main/firmware-2.bin_999.999.0.636 \
 		$(1)/lib/firmware/ath10k/QCA988X/hw2.0/firmware-2.bin
 else
 	$(INSTALL_DATA) \
-		$(PKG_BUILD_DIR)/$(PKG_ATH10K_LINUX_FIRMWARE_SUBDIR)/ath10k/QCA988X/hw2.0/board.bin \
-		$(PKG_BUILD_DIR)/$(PKG_ATH10K_LINUX_FIRMWARE_SUBDIR)/ath10k/QCA988X/hw2.0/firmware-2.bin \
-		$(1)/lib/firmware/ath10k/QCA988X/hw2.0/
+		$(PKG_BUILD_DIR)/$(PKG_ATH10K_LINUX_FIRMWARE_SUBDIR)/10.2/firmware-3.bin_10.2-00082-4-2 \
+		$(1)/lib/firmware/ath10k/QCA988X/hw2.0/firmware-3.bin
 endif
 endef
 
@@ -1804,6 +1844,13 @@ define KernelPackage/mwl8k/install
 		$(PKG_BUILD_DIR)/$(PKG_LINUX_FIRMWARE_SUBDIR)/mwl8k/fmimage_8687.fw \
 		$(PKG_BUILD_DIR)/$(PKG_LINUX_FIRMWARE_SUBDIR)/mwl8k/helper_8687.fw \
 		$(1)/lib/firmware/mwl8k/
+endef
+
+define KernelPackage/mwifiex-pcie/install
+	$(INSTALL_DIR) $(1)/lib/firmware/mrvl
+	$(INSTALL_DATA) \
+		$(PKG_BUILD_DIR)/$(PKG_LINUX_FIRMWARE_SUBDIR)/mrvl/pcie8897_uapsta.bin \
+		$(1)/lib/firmware/mrvl/
 endef
 
 define KernelPackage/net-ipw2100/install
@@ -1984,6 +2031,7 @@ $(eval $(call KernelPackage,iwl-legacy))
 $(eval $(call KernelPackage,iwl4965))
 $(eval $(call KernelPackage,iwl3945))
 $(eval $(call KernelPackage,mwl8k))
+$(eval $(call KernelPackage,mwifiex-pcie))
 $(eval $(call KernelPackage,net-hermes))
 $(eval $(call KernelPackage,net-hermes-pci))
 $(eval $(call KernelPackage,net-hermes-plx))

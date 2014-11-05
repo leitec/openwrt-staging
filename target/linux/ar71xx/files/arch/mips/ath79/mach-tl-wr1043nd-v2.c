@@ -43,7 +43,7 @@
 #define TL_WR1043_V2_GPIO_LED_SYSTEM	19
 
 #define TL_WR1043_V2_GPIO_BTN_RESET	16
-#define TL_WR1043_V2_GPIO_BTN_WLAN	17
+#define TL_WR1043_V2_GPIO_BTN_RFKILL	17
 
 #define TL_WR1043_V2_GPIO_USB_POWER	21
 
@@ -94,11 +94,11 @@ static struct gpio_keys_button tl_wr1043_v2_gpio_keys[] __initdata = {
 		.active_low	= 1,
 	},
 	{
-		.desc		= "WLAN button",
+		.desc		= "RFKILL button",
 		.type		= EV_KEY,
-		.code		= KEY_WLAN,
+		.code		= KEY_RFKILL,
 		.debounce_interval = TL_WR1043_V2_KEYS_DEBOUNCE_INTERVAL,
-		.gpio		= TL_WR1043_V2_GPIO_BTN_WLAN,
+		.gpio		= TL_WR1043_V2_GPIO_BTN_RFKILL,
 		.active_low	= 1,
 	},
 };
@@ -164,28 +164,10 @@ static struct mdio_board_info wr1043nd_v2_mdio0_info[] = {
 	},
 };
 
-static void __init wr1043nd_v2_gmac_setup(void)
-{
-	void __iomem *base;
-	u32 t;
-
-	base = ioremap(QCA955X_GMAC_BASE, QCA955X_GMAC_SIZE);
-
-	t = __raw_readl(base + QCA955X_GMAC_REG_ETH_CFG);
-
-	t &= ~(QCA955X_ETH_CFG_RGMII_EN | QCA955X_ETH_CFG_GE0_SGMII);
-	t |= QCA955X_ETH_CFG_RGMII_EN;
-
-	__raw_writel(t, base + QCA955X_GMAC_REG_ETH_CFG);
-
-	iounmap(base);
-}
-
 static void __init tl_wr1043nd_v2_setup(void)
 {
 	u8 *mac = (u8 *) KSEG1ADDR(0x1f01fc00);
 	u8 *art = (u8 *) KSEG1ADDR(0x1fff0000);
-	u8 tmpmac[ETH_ALEN];
 
 	ath79_register_m25p80(&wr1043nd_v2_flash_data);
 
@@ -195,14 +177,13 @@ static void __init tl_wr1043nd_v2_setup(void)
 					ARRAY_SIZE(tl_wr1043_v2_gpio_keys),
 					tl_wr1043_v2_gpio_keys);
 
-	ath79_init_mac(tmpmac, mac, -1);
-	ath79_register_wmac(art + TL_WR1043_V2_WMAC_CALDATA_OFFSET, tmpmac);
+	ath79_register_wmac(art + TL_WR1043_V2_WMAC_CALDATA_OFFSET, mac);
 
 	mdiobus_register_board_info(wr1043nd_v2_mdio0_info,
 				    ARRAY_SIZE(wr1043nd_v2_mdio0_info));
 	ath79_register_mdio(0, 0x0);
 
-	wr1043nd_v2_gmac_setup();
+	ath79_setup_qca955x_eth_cfg(QCA955X_ETH_CFG_RGMII_EN);
 
 	/* GMAC0 is connected to the RMGII interface */
 	ath79_eth0_data.phy_if_mode = PHY_INTERFACE_MODE_RGMII;

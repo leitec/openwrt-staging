@@ -9,7 +9,7 @@ include $(TOPDIR)/rules.mk
 
 PKG_NAME:=binutils
 PKG_VERSION:=2.24
-PKG_RELEASE:=1
+PKG_RELEASE:=2
 
 PKG_SOURCE_URL:=@GNU/binutils
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION).tar.bz2
@@ -22,7 +22,7 @@ PKG_REMOVE_FILES:=libtool.m4
 PKG_INSTALL:=1
 
 PKG_MAINTAINER:=Felix Fietkau <nbd@openwrt.org>
-
+PKG_LICENSE:=GPL-3.0+
 PKG_BUILD_PARALLEL:=1
 
 include $(INCLUDE_DIR)/package.mk
@@ -45,9 +45,10 @@ define Package/binutils/description
   The Binutils package contains a linker, an assembler, and other tools for handling object files
 endef
 
-TARGET_CFLAGS += $(FPIC)
+TARGET_CFLAGS += $(FPIC) -Wno-unused-value
 
 CONFIGURE_ARGS += \
+	--enable-shared \
 	--enable-install-libiberty \
 	--enable-install-libbfd
 
@@ -67,6 +68,8 @@ endef
 define Package/objdump/install
 	$(INSTALL_DIR) $(1)/usr/bin $(1)/usr/lib
 	$(CP) $(PKG_INSTALL_DIR)/usr/bin/objdump $(1)/usr/bin/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libopcodes*.so $(1)/usr/lib/
+	$(CP) $(PKG_INSTALL_DIR)/usr/lib/libbfd*.so $(1)/usr/lib/
 endef
 
 define Package/binutils/install

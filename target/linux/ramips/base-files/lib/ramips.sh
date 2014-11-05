@@ -25,6 +25,12 @@ ramips_board_detect() {
 	*"Edimax 3g-6200nl")
 		name="3g-6200nl"
 		;;
+	*"A5-V11")
+		name="a5-v11"
+		;;
+	*"Airlink101 AR670W")
+		name="ar670w"
+		;;
 	*"Airlink101 AR725W")
 		name="ar725w"
 		;;
@@ -55,11 +61,11 @@ ramips_board_detect() {
 	*"AsiaRF AWM002 EVB")
 		name="awm002-evb"
 		;;
+	*"AsiaRF AWM003 EVB")
+		name="awm003-evb"
+		;;
 	*"AsiaRF AWAPN2403")
 		name="awapn2403"
-		;;
-	*"BR6524N")
-		name="br6524n"
 		;;
 	*"Asus WL-330N")
 		name="wl-330n"
@@ -121,6 +127,9 @@ ramips_board_detect() {
 	*"ESR-9753")
 		name="esr-9753"
 		;;
+	*"EASYACC WI-STOR WIZARD 8800")
+		name="wizard8800"
+		;;
 	*"Edimax BR-6475nD")
 		name="br-6475nd"
 		;;
@@ -154,12 +163,24 @@ ramips_board_detect() {
 	*"HILINK HLK-RM04")
 		name="hlk-rm04"
 		;;
+	*"HOOTOO HT-TM02")
+		name="ht-tm02"
+		;;
 	*"HAME MPR-A1")
  		name="mpr-a1"
  		;;
 	*"HAME MPR-A2")
  		name="mpr-a2"
  		;;
+	*"Kingston MLW221")
+		name="mlw221"
+		;;
+	*"Linksys E1700")
+		name="e1700"
+		;;
+	*"Planex MZK-750DHP")
+		name="mzk-750dhp"
+		;;
 	*"NBG-419N")
 		name="nbg-419n"
 		;;
@@ -169,6 +190,12 @@ ramips_board_detect() {
 	*"NexAira BC2")
 		name="bc2"
 		;;
+	*"Nexx WT1520")
+		name="wt1520"
+		;;
+	*"Nexx WT3020")
+		name="wt3020"
+		;;
 	*"NW718")
 		name="nw718"
 		;;
@@ -177,6 +204,9 @@ ramips_board_detect() {
 		;;
 	*"Omnima MiniEMBWiFi")
 		name="omni-emb"
+		;;
+	*"Omnima MiniPlug")
+		name="omni-plug"
 		;;
 	*"Petatel PSR-680W"*)
 		name="psr-680w"
@@ -205,6 +235,9 @@ ramips_board_detect() {
 	*"Asus RP-N53")
 		name="rp-n53"
 		;;
+	*"Ralink MT7620a + MT7530 evaluation board")
+		name="mt7620a_mt7530"
+		;;
 	*"RT-G32 B1")
 		name="rt-g32-b1"
 		;;
@@ -228,6 +261,9 @@ ramips_board_detect() {
 		;;
 	*"V22RW-2X2")
 		name="v22rw-2x2"
+		;;
+	*"VoCore")
+		name="vocore"
 		;;
 	*"W502U")
 		name="w502u"
@@ -309,6 +345,15 @@ ramips_board_detect() {
 		;;
 	*"Zbtlink ZBT-WA05")
 		name="zbt-wa05"
+		;;
+	*"ZBT WR8305RT")
+		name="wr8305rt"
+		;;
+	*"Lenovo Y1")
+		name="y1"
+		;;
+	*"Lenovo Y1S")
+		name="y1s"
 		;;
 	*)
 		name="generic"

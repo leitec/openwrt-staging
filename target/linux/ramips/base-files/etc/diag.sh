@@ -12,6 +12,9 @@ get_status_led() {
 	3g300m | w150m)
 		status_led="tenda:blue:ap"
 		;;
+	ar670w)
+		status_led="ar670w:green:power"
+		;;
 	ar725w)
 		status_led="ar725w:green:power"
 		;;
@@ -45,6 +48,9 @@ get_status_led() {
 	dap-1350)
 		status_led="d-link:blue:power"
 		;;
+	e1700)
+		status_led="linksys:green:power"
+		;;
 	esr-9753)
 		status_led="esr-9753:orange:power"
 		;;
@@ -63,6 +69,9 @@ get_status_led() {
 	hlk-rm04)
 		status_led="hlk-rm04:red:power"
 		;;
+	ht-tm02)
+		status_led="ht-tm02:white:status"
+		;;
 	all0239-3g|\
 	hw550-3g)
 		status_led="hw550-3g:green:status"
@@ -73,14 +82,17 @@ get_status_led() {
 	m4)
 		status_led="m4:blue:status"
 		;;
+	mlw221)
+		status_led="kingston:blue:status"
+		;;
 	mofi3500-3gn)
 		status_led="mofi3500-3gn:green:status"
 		;;
 	mpr-a1)
-		status_led="mpr-a1:red:power"
+		status_led="hame:red:power"
 		;;
 	mpr-a2)
-		status_led="mpr-a2:red:power"
+		status_led="hame:red:power"
 		;;
 	nbg-419n)
 		status_led="nbg-419n:green:power"
@@ -126,6 +138,9 @@ get_status_led() {
 	v22rw-2x2)
 		status_led="v22rw-2x2:green:security"
 		;;
+	vocore)
+		status_led="vocore:green:status"
+		;;
 	w306r-v20)
 		status_led="w306r-v20:green:sys"
 		;;
@@ -152,8 +167,17 @@ get_status_led() {
 	wr512-3gn)
 		status_led="wr512:green:wps"
 		;;
+	wr8305rt)
+		status_led="wr8305rt:sys"
+		;;
 	wnce2001)
 		status_led="netgear:green:power"
+		;;
+	nexx-wt1520)
+		status_led="nexx-wt1520:white:power"
+		;;
+	nexx-wt3020)
+		status_led="nexx:blue:power"
 		;;
 	mzk-w300nh2)
 		status_led="mzkw300nh2:green:power"
@@ -178,6 +202,10 @@ get_status_led() {
 		;;
 	na930)
 		status_led="na930:blue:power"
+		;;
+	y1 | \
+	y1s)
+		status_led="lenovo:blue:power"
 		;;
 	esac
 }

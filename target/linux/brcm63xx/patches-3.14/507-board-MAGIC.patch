@@ -1,7 +1,7 @@
 --- a/arch/mips/bcm63xx/boards/board_bcm963xx.c
 +++ b/arch/mips/bcm63xx/boards/board_bcm963xx.c
-@@ -802,6 +802,78 @@ static struct board_info __initdata boar
- 		},
+@@ -840,6 +840,78 @@ static struct board_info __initdata boar
+ 		.num_board_fixups	= ARRAY_SIZE(spw500v_fixups),
  	},
  };
 +
@@ -76,10 +76,10 @@
 +		},
 +	},
 +};
- #endif
+ #endif /* CONFIG_BCM63XX_CPU_6348 */
  
  /*
-@@ -1731,6 +1803,7 @@ static const struct board_info __initcon
+@@ -1442,6 +1514,7 @@ static const struct board_info __initcon
  	&board_rta1025w_16,
  	&board_96348_D4PW,
  	&board_spw500v,

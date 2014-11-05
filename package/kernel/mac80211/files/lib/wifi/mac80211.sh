@@ -8,16 +8,22 @@ lookup_phy() {
 
 	local devpath
 	config_get devpath "$device" path
-	[ -n "$devpath" -a -d "/sys/devices/$devpath/ieee80211" ] && {
-		phy="$(ls /sys/devices/$devpath/ieee80211 | grep -m 1 phy)"
-		[ -n "$phy" ] && return
+	[ -n "$devpath" ] && {
+		for _phy in /sys/devices/$devpath/ieee80211/phy*; do
+			[ -e "$_phy" ] && {
+				phy="${_phy##*/}"
+				return
+			}
+		done
 	}
 
 	local macaddr="$(config_get "$device" macaddr | tr 'A-Z' 'a-z')"
 	[ -n "$macaddr" ] && {
-		for _phy in $(ls /sys/class/ieee80211 2>/dev/null); do
-			[ "$macaddr" = "$(cat /sys/class/ieee80211/${_phy}/macaddress)" ] || continue
-			phy="$_phy"
+		for _phy in /sys/class/ieee80211/*; do
+			[ -e "$_phy" ] || continue
+
+			[ "$macaddr" = "$(cat ${_phy}/macaddress)" ] || continue
+			phy="${_phy##*/}"
 			return
 		done
 	}
@@ -61,7 +67,12 @@ detect_mac80211() {
 		[ -n "$type" ] || break
 		devidx=$(($devidx + 1))
 	done
-	for dev in $(ls /sys/class/ieee80211); do
+
+	for _dev in /sys/class/ieee80211/*; do
+		[ -e "$_dev" ] || continue
+
+		dev="${_dev##*/}"
+
 		found=0
 		config_foreach check_mac80211_device wifi-device
 		[ "$found" -gt 0 ] && continue
