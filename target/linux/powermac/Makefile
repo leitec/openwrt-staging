@@ -13,7 +13,7 @@ FEATURES:=fpu usb pci squashfs
 CPU_TYPE:=601
 MAINTAINER:=Claudio Leite <leitec@staticky.com>
 
-KERNEL_PATCHVER:=3.14
+KERNEL_PATCHVER:=3.18
 
 include $(INCLUDE_DIR)/target.mk
 
