@@ -71,8 +71,6 @@
 		pinctrl-names = "default";
 		pinctrl-0 = <&rgmii1_pins &rgmii2_pins &mdio_pins>;
 
-		ralink,port-map = "llllw";
-
 		port@5 {
 			status = "okay";
 			ralink,fixed-link = <1000 1 1 1>;
@@ -111,6 +109,7 @@
 
 	gsw@10110000 {
 		ralink,port4 = "gmac";
+		mediatek,mt7530 = <1>;
 	};
 
 	wmac@10180000 {
