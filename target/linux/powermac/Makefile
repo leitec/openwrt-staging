@@ -9,8 +9,8 @@ include $(TOPDIR)/rules.mk
 ARCH:=powerpc
 BOARD:=powermac
 BOARDNAME:=Apple Power Macintosh
+SUBTARGETS:=601 750
 FEATURES:=fpu usb pci squashfs
-CPU_TYPE:=601
 MAINTAINER:=Claudio Leite <leitec@staticky.com>
 
 KERNEL_PATCHVER:=3.18

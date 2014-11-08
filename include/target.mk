@@ -245,6 +245,7 @@ ifeq ($(DUMP),1)
   ifeq ($(ARCH),powerpc)
     CPU_CFLAGS_601:=-mcpu=601
     CPU_CFLAGS_603e:=-mcpu=603e
+    CPU_CFLAGS_750:=-mcpu=750
     CPU_CFLAGS_8540:=-mcpu=8540
     CPU_CFLAGS_405:=-mcpu=405
     CPU_CFLAGS_440:=-mcpu=440
