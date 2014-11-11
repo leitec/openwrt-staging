@@ -33,6 +33,10 @@ kirkwood_board_detect() {
 		name="dir665"
 		;;
 
+	"Linksys EA3500")
+		name="ea3500"
+		;;
+
 	"Linksys EA4500")
 		name="ea4500"
 		;;

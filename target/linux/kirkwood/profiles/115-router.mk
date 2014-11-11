@@ -18,6 +18,24 @@ define Profile/DIR665/Description
  Package set compatible with the D-Link DIR-665
 endef
 
+$(eval $(call Profile,DIR665))
+
+define Profile/EA3500
+  NAME:=Linksys EA3500
+  PACKAGES:= \
+	kmod-mwl8k kmod-usb2 kmod-usb-storage \
+	uboot-envtools
+endef
+
+define Profile/EA3500/Description
+ Package set compatible with Linksys EA3500 board.
+endef
+
+EA3500_UBIFS_OPTS:="-m 2048 -e 126KiB -c 4096"
+EA3500_UBI_OPTS:="-m 2048 -p 128KiB -s 512"
+
+$(eval $(call Profile,EA3500))
+
 define Profile/EA4500
   NAME:=Linksys EA4500
   PACKAGES:= \
@@ -32,5 +50,4 @@ endef
 EA4500_UBIFS_OPTS:="-m 2048 -e 126KiB -c 4096"
 EA4500_UBI_OPTS:="-m 2048 -p 128KiB -s 512"
 
-$(eval $(call Profile,DIR665))
 $(eval $(call Profile,EA4500))
