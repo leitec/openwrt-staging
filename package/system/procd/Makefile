@@ -8,14 +8,14 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=procd
-PKG_VERSION:=2014-11-08
+PKG_VERSION:=2014-12-02
 
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=git://nbd.name/luci2/procd.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=0f49ab0feab67aac4a399bbad58f5f230f625833
+PKG_SOURCE_VERSION:=40c4e68266a7b04239394c528c4c290d960fc38c
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 CMAKE_INSTALL:=1
 
@@ -51,13 +51,22 @@ config PROCD_SHOW_BOOT
 	bool
 	default n
 	prompt "Print the shutdown to the console as well as logging it to syslog"
+
+config PROCD_ZRAM_TMPFS
+	bool
+	default n
+	prompt "Mount /tmp using zram."
 endmenu
 endef
 
-PKG_CONFIG_DEPENDS:= PROCD_SHOW_BOOT
+PKG_CONFIG_DEPENDS:= PROCD_SHOW_BOOT PROCD_ZRAM_TMPFS
 
-ifeq ($(CONFIG_PACKAGE_PROCD_SHOW_BOOT),y)
-  CMAKE_OPTIONS += -DSHOW_BOOT_ON_CONSOLE
+ifeq ($(CONFIG_PROCD_SHOW_BOOT),y)
+  CMAKE_OPTIONS += -DSHOW_BOOT_ON_CONSOLE=1
+endif
+
+ifeq ($(CONFIG_PROCD_ZRAM_TMPFS),y)
+  CMAKE_OPTIONS += -DZRAM_TMPFS=1
 endif
 
 define Package/procd/install

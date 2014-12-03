@@ -79,6 +79,12 @@ ramips_board_detect() {
 	*"Aztech HW550-3G")
 		name="hw550-3g"
 		;;
+	*"Buffalo WSR-600")
+		name="wsr-600"
+		;;
+	*"Buffalo WSR-1166")
+		name="wsr-1166"
+		;;
 	*"CY-SWR1100")
 		name="cy-swr1100"
 		;;
@@ -354,6 +360,9 @@ ramips_board_detect() {
 		;;
 	*"Lenovo Y1S")
 		name="y1s"
+		;;
+	*"Mediatek MT7621 evaluation board")
+		name="mt7621"
 		;;
 	*"Mediatek MT7628AN evaluation board")
 		name="mt7628"
