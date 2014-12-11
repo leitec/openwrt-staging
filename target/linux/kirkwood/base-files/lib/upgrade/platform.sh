@@ -1,18 +1,15 @@
-#
-# Copyright (C) 2014 OpenWrt.org
-#
-
 . /lib/kirkwood.sh
 
-RAMFS_COPY_DATA=/lib/kirkwood.sh
-
 platform_check_image() {
-	local board="$(kirkwood_board_name)"
-	local magic="$(get_magic_long "$1")"
-
 	[ "$#" -gt 1 ] && return 1
+	local board="$(kirkwood_board_name)"
+	local magic="$(get_magic_word "$1")"
 
 	case "$board" in
+	"ea4500")
+		nand_do_platform_check $board $1
+		return $?
+		;;
 	"dir665")
 		[ "$magic" != "27051956" ] && {
 			echo "Invalid image type."
