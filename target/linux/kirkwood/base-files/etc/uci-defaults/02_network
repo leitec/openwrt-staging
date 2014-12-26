@@ -42,9 +42,9 @@ ucidef_set_interface_loopback
 
 case "$board" in
 "dir665")
-	ucidef_set_interfaces_lan_wan "eth0.1" "eth1"
-	ucidef_add_switch "switch0" "1" "1"
-	ucidef_add_switch_vlan "switch0" "1" "0 1 2 3 6t"
+	ucidef_set_interfaces_lan_wan "eth0" "eth1"
+	ucidef_add_switch "switch0" "1" "0"
+	add_port_based_vlan "switch0" "1" "0 1 2 3 6"
 	add_port_based_vlan "switch0" "2" "4 5"
 	;;
 "dockstar")
@@ -63,10 +63,17 @@ case "$board" in
 	ucidef_set_interfaces_lan_wan "eth0" "eth1"
 	;;
 "ea4500")
-	ucidef_set_interfaces_lan_wan "eth0.1" "eth1"
-	ucidef_add_switch "switch0" "1" "1"
-	ucidef_add_switch_vlan "switch0" "1" "0 1 2 3 5t"
+	ucidef_set_interfaces_lan_wan "eth0" "eth1"
+	ucidef_add_switch "switch0" "1" "0"
+	add_port_based_vlan "switch0" "1" "0 1 2 3 5"
 	add_port_based_vlan "switch0" "2" "4 6"
+	;;
+"guruplug-server-plus")
+	set_lan_dhcp "eth0" "eth1"
+	;;
+"sheevaplug" | \
+"sheevaplug-esata")
+	set_lan_dhcp "eth0"
 	;;
 *)
 	ucidef_set_interface_lan "eth0"
