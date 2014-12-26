@@ -352,7 +352,7 @@ static int mvsw61xx_set_vlan_ports(struct switch_dev *dev,
 
 		state->vlans[vno].port_mode |= mode << (pno * 4);
 		state->vlans[vno].port_sstate |=
-			MV_STUCTL_STATE_FORWARDING << (pno * 4);
+			MV_STUCTL_STATE_FORWARDING << (pno * 4) + 2;
 	}
 
 	/*
@@ -476,7 +476,7 @@ static int mvsw61xx_vtu_program(struct switch_dev *dev)
 		s2 = (u16) ((state->vlans[i].port_sstate >> 16) & 0xffff);
 
 		sw16(dev, MV_GLOBALREG(VTU_VID), MV_VTU_VID_VALID);
-		sw16(dev, MV_GLOBALREG(VTU_SID), state->vlans[i].vid);
+		sw16(dev, MV_GLOBALREG(VTU_SID), i);
 		sw16(dev, MV_GLOBALREG(VTU_DATA1), s1);
 		sw16(dev, MV_GLOBALREG(VTU_DATA2), s2);
 		sw16(dev, MV_GLOBALREG(VTU_DATA3), 0);
@@ -492,7 +492,7 @@ static int mvsw61xx_vtu_program(struct switch_dev *dev)
 
 		sw16(dev, MV_GLOBALREG(VTU_VID),
 				MV_VTU_VID_VALID | state->vlans[i].vid);
-		sw16(dev, MV_GLOBALREG(VTU_SID), state->vlans[i].vid);
+		sw16(dev, MV_GLOBALREG(VTU_SID), i);
 		sw16(dev, MV_GLOBALREG(VTU_FID), 0);
 		sw16(dev, MV_GLOBALREG(VTU_DATA1), v1);
 		sw16(dev, MV_GLOBALREG(VTU_DATA2), v2);
