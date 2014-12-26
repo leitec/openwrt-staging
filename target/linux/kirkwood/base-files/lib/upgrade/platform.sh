@@ -3,7 +3,7 @@
 platform_check_image() {
 	[ "$#" -gt 1 ] && return 1
 	local board="$(kirkwood_board_name)"
-	local magic="$(get_magic_word "$1")"
+	local magic="$(get_magic_long "$1")"
 
 	case "$board" in
 	"ea4500")
