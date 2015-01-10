@@ -91,7 +91,6 @@ platform_check_image() {
 	whr-600d |\
 	whr-1166d |\
 	wsr-600 |\
-	wsr-1166 |\
 	wl-330n | \
 	wl-330n3g | \
 	wl-351 | \
@@ -116,6 +115,13 @@ platform_check_image() {
 		}
 		return 0
 		;;
+	wsr-1166)
+		[ "$magic" != "48445230" ] && {
+			echo "Invalid image type."
+			return 1
+		}
+		return 0
+		;;
 	ar670w)
 		[ "$magic" != "6d000080" ] && {
 			echo "Invalid image type."
@@ -134,6 +140,13 @@ platform_check_image() {
 		;;
 	br-6475nd)
 		[ "$magic" != "43535953" ] && {
+			echo "Invalid image type."
+			return 1
+		}
+		return 0
+		;;
+	c20i)
+		[ "$magic" != "03000000" ] && {
 			echo "Invalid image type."
 			return 1
 		}
