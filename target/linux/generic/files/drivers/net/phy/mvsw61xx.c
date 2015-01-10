@@ -352,7 +352,7 @@ static int mvsw61xx_set_vlan_ports(struct switch_dev *dev,
 
 		state->vlans[vno].port_mode |= mode << (pno * 4);
 		state->vlans[vno].port_sstate |=
-			MV_STUCTL_STATE_FORWARDING << (pno * 4) + 2;
+			MV_STUCTL_STATE_FORWARDING << (pno * 4 + 2);
 	}
 
 	/*
