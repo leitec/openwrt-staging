@@ -8,6 +8,7 @@ include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
 NAND_BLOCKSIZE := 2048-128k
+KDIR_TMP:=$(KDIR)/tmp
 
 define sanitize_profile_name
 $(shell echo $(PROFILE) | tr '[:upper:]' '[:lower:]')
@@ -97,6 +98,10 @@ define Image/Build/squashfs
 	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
 endef
 
+define BuildSysupgrade
+	$(call Image/Build/SysupgradeNAND,$(2),$(1),$(BIN_DIR)/$(IMG_PREFIX)-$(2)-uImage)
+endef
+
 define Image/mkfs/targz
 
 	$(TAR) -czpf $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-rootfs.tar.gz --numeric-owner --owner=0 --group=0 -C $(TARGET_DIR)/ .
@@ -171,6 +176,17 @@ define Image/Build
 		$(call Image/Build/$(1),$(1)), \
 		$(CP) $(KDIR)/root.$(1) $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img \
 	)
+
+	# ugly hack for the moment -- ea4500 specific
+	#
+	# sysupgrade .tar bundle -- use 'ubifs' variant only
+	$(call BuildSysupgrade,$(1),ea4500)
+
+	# factory-compatible image -- use 'ubi' variant only
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2688k conv=sync; \
+		dd if=$(KDIR)/root.$(1); \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
 endef
 
 $(eval $(call BuildImage))

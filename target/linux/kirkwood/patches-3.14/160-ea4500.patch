@@ -10,7 +10,7 @@
  	kirkwood-ib62x0.dtb \
 --- /dev/null
 +++ b/arch/arm/boot/dts/kirkwood-ea4500.dts
-@@ -0,0 +1,167 @@
+@@ -0,0 +1,187 @@
 +/*
 + * kirkwood-ea4500.dts - Device Tree file for Linksys EA4500
 + *
@@ -140,22 +140,42 @@
 +
 +	partition@0 {
 +		label = "u-boot";
-+		reg = <0x0000000 0x80000>;
++		reg = <0x0 0x80000>;
 +	};
 +
 +	partition@80000 {
-+		label = "u-boot environment";
++		label = "u_env";
 +		reg = <0x80000 0x20000>;
 +	};
 +
-+	partition@200000 {
-+		label = "kernel";
-+		reg = <0x200000 0x200000>;
++	partition@a0000 {
++		label = "s_env";
++		reg = <0xa0000 0x20000>;
 +	};
 +
-+	partition@400000 {
-+		label = "root";
-+		reg = <0x400000 0x1c00000>;
++	partition@200000 {
++		label = "kernel1";
++		reg = <0x200000 0x1a00000>;
++	};
++
++	partition@4a0000 {
++		label = "rootfs1";
++		reg = <0x4a0000 0x1760000>;
++	};
++
++	partition@1c00000 {
++		label = "kernel2";
++		reg = <0x1c00000 0x1a00000>;
++	};
++
++	partition@1ea0000 {
++		label = "rootfs2";
++		reg = <0x1ea0000 0x1760000>;
++	};
++
++	partition@3600000 {
++		label = "syscfg";
++		reg = <0x3600000 0x4a00000>;
 +	};
 +};
 +
