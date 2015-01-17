@@ -10,6 +10,35 @@ include $(INCLUDE_DIR)/image.mk
 NAND_BLOCKSIZE := 2048-128k
 KDIR_TMP:=$(KDIR)/tmp
 
+# new image system
+#
+TARGET_DEVICES += dir665
+
+DEVICE_VARS += DTS
+KERNEL_LOADADDR:=0x8000
+
+KERNEL_DTB = kernel-bin | add-dtb
+
+define Device/Default
+  KERNEL := $(KERNEL_DTB)
+  KERNEL_TYPE := zImage
+endef
+
+define Device/dir665
+  DTS := kirkwood-dir665
+  BLOCKSIZE := 1536k
+  FILESYSTEMS := squashfs
+  IMAGES := sysupgrade.bin
+  IMAGE/sysupgrade.bin := append-kernel $$$$(BLOCKSIZE) | append-rootfs | pad-rootfs
+  KERNEL := $(KERNEL_DTB) | uImage none
+endef
+
+define Build/add-dtb
+	cat $(DTS_DIR)/$(DTS).dtb >> $@
+endef
+
+# end new image system
+
 define sanitize_profile_name
 $(shell echo $(PROFILE) | tr '[:upper:]' '[:lower:]')
 endef
@@ -91,11 +120,6 @@ define Image/Build/squashfs
 		dd if=$(KDIR)/zImage bs=4096k conv=sync; \
 		dd if=$(KDIR)/root.$(1) bs=128k conv=sync; \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img
-
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=1536k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
 endef
 
 define BuildSysupgrade
@@ -123,9 +147,6 @@ endef
 
 Image/BuildKernel/Template/Generic=$(call Image/BuildKernel/Template)
 Image/InstallKernel/Template/Generic=$(call Image/InstallKernel/Template)
-
-Image/BuildKernel/Template/DIR665=$(call Image/BuildKernel/Template,dir665)
-Image/InstallKernel/Template/DIR665=$(call Image/InstallKernel/Template,dir665)
 
 Image/BuildKernel/Template/DOCKSTAR=$(call Image/BuildKernel/Template,dockstar)
 Image/InstallKernel/Template/DOCKSTAR=$(call Image/InstallKernel/Template,dockstar)
@@ -176,17 +197,6 @@ define Image/Build
 		$(call Image/Build/$(1),$(1)), \
 		$(CP) $(KDIR)/root.$(1) $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img \
 	)
-
-	# ugly hack for the moment -- ea4500 specific
-	#
-	# sysupgrade .tar bundle -- use 'ubifs' variant only
-	$(call BuildSysupgrade,$(1),ea4500)
-
-	# factory-compatible image -- use 'ubi' variant only
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2688k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
 endef
 
 $(eval $(call BuildImage))
