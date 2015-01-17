@@ -304,7 +304,18 @@ define Build/append-rootfs
 endef
 
 define Build/pad-rootfs
-	$(call prepare_generic_squashfs,$@)
+	$(call prepare_generic_squashfs,$@ $(1))
+endef
+
+define Build/pad-offset
+	let \
+		size="$$(stat -c%s $@)" \
+		pad="$(word 1, $(1))" \
+		offset="$(word 2, $(1))" \
+		pad="(pad - ((size + offset) % pad)) % pad" \
+		newsize='size + pad'; \
+		dd if=$@ of=$@.new bs=$$newsize count=1 conv=sync
+	mv $@.new $@
 endef
 
 define Build/check-size
