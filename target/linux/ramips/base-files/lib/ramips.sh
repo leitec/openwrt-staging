@@ -187,6 +187,9 @@ ramips_board_detect() {
 	*"Kingston MLW221")
 		name="mlw221"
 		;;
+	*"Kingston MLWG2")
+		name="mlwg2"
+		;;
 	*"Linksys E1700")
 		name="e1700"
 		;;
@@ -210,6 +213,9 @@ ramips_board_detect() {
 		;;
 	*"NW718")
 		name="nw718"
+		;;
+	*"Intenso Memory 2 Move")
+		name="m2m"
 		;;
 	*"Omnima EMB HPM")
 		name="omni-emb-hpm"

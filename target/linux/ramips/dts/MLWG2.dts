@@ -3,12 +3,16 @@
 /include/ "mt7620n.dtsi"
 
 / {
-	compatible = "asus,rt-n14u", "ralink,mt7620n-soc";
-	model = "Asus RT-N14U";
+	compatible = "mlwG2", "ralink,mt7620n-soc";
+	model = "Kingston MLWG2";
 
 	palmbus@10000000 {
-		gpio2: gpio@660 {
+		gpio0: gpio@600 {
 			status = "okay";
+		};
+
+		gpio2: gpio@660 {
+                       status = "okay";
 		};
 
 		gpio3: gpio@688 {
@@ -21,10 +25,9 @@
 			m25p80@0 {
 				#address-cells = <1>;
 				#size-cells = <1>;
-				#compatible = "mx25l6405d";
-				compatible = "w25q128";
+				compatible = "mx25l12805d";
 				reg = <0 0>;
-				linux,modalias = "m25p80", "w25q128";
+				linux,modalias = "m25p80";
 				spi-max-frequency = <10000000>;
 
 				partition@0 {
@@ -47,7 +50,12 @@
 
 				partition@50000 {
 					label = "firmware";
-					reg = <0x50000 0xfb0000>;
+					reg = <0x50000 0xf60000>;
+				};
+
+				partition@fb0000 {
+					label = "user-config";
+					reg = <0xfb0000 0x50000>;
 				};
 			};
 		};
@@ -73,7 +81,7 @@
 	pinctrl {
 		state_default: pinctrl0 {
 			default {
-				ralink,group = "ephy", "wled", "i2c";
+				ralink,group = "i2c", "ephy", "wled";
 				ralink,function = "gpio";
 			};
 		};
@@ -81,24 +89,12 @@
 
 	gpio-leds {
 		compatible = "gpio-leds";
-		wan {
-			label = "asus:blue:wan";
-			gpios = <&gpio2 0 1>;
-		};
-		lan {
-			label = "asus:blue:lan";
-			gpios = <&gpio2 1 1>;
-		};
-		usb {
-			label = "asus:blue:usb";
-			gpios = <&gpio2 2 1>;
-		};
-		power {
-			label = "asus:blue:power";
+		system {
+			label = "kingston:blue:system";
 			gpios = <&gpio2 3 1>;
 		};
-		air {
-			label = "asus:blue:air";
+		wifi {
+			label = "kingston:blue:wifi";
 			gpios = <&gpio3 0 1>;
 		};
 	};
@@ -113,8 +109,8 @@
 			gpios = <&gpio0 1 1>;
 			linux,code = <0x198>;
 		};
-		wps {
-			label = "wps";
+		system {
+			label = "system";
 			gpios = <&gpio0 2 1>;
 			linux,code = <0x211>;
 		};

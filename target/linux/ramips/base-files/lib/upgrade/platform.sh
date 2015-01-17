@@ -55,9 +55,11 @@ platform_check_image() {
 	ht-tm02 | \
 	hw550-3g | \
 	ip2202 | \
+	m2m | \
 	m3 | \
 	m4 | \
 	mlw221 | \
+	mlwg2 | \
 	mofi3500-3gn | \
 	mpr-a1 | \
 	mpr-a2 | \

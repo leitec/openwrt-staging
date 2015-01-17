@@ -30,8 +30,8 @@
 #include "ar8327.h"
 
 extern const struct ar8xxx_mib_desc ar8236_mibs[39];
-extern struct switch_attr ar8xxx_sw_attr_port[2];
-extern struct switch_attr ar8xxx_sw_attr_vlan[1];
+extern const struct switch_attr ar8xxx_sw_attr_port[2];
+extern const struct switch_attr ar8xxx_sw_attr_vlan[1];
 
 static u32
 ar8327_get_pad_cfg(struct ar8327_pad_cfg *cfg)
@@ -865,13 +865,11 @@ ar8327_set_mirror_regs(struct ar8xxx_priv *priv)
 		   AR8327_FWD_CTRL0_MIRROR_PORT,
 		   (0xF << AR8327_FWD_CTRL0_MIRROR_PORT_S));
 	for (port = 0; port < AR8327_NUM_PORTS; port++) {
-		ar8xxx_rmw(priv, AR8327_REG_PORT_LOOKUP(port),
-			   AR8327_PORT_LOOKUP_ING_MIRROR_EN,
-			   0);
+		ar8xxx_reg_clear(priv, AR8327_REG_PORT_LOOKUP(port),
+			   AR8327_PORT_LOOKUP_ING_MIRROR_EN);
 
-		ar8xxx_rmw(priv, AR8327_REG_PORT_HOL_CTRL1(port),
-			   AR8327_PORT_HOL_CTRL1_EG_MIRROR_EN,
-			   0);
+		ar8xxx_reg_clear(priv, AR8327_REG_PORT_HOL_CTRL1(port),
+			   AR8327_PORT_HOL_CTRL1_EG_MIRROR_EN);
 	}
 
 	/* now enable mirroring if necessary */
@@ -886,17 +884,15 @@ ar8327_set_mirror_regs(struct ar8xxx_priv *priv)
 		   (priv->monitor_port << AR8327_FWD_CTRL0_MIRROR_PORT_S));
 
 	if (priv->mirror_rx)
-		ar8xxx_rmw(priv, AR8327_REG_PORT_LOOKUP(priv->source_port),
-			   AR8327_PORT_LOOKUP_ING_MIRROR_EN,
+		ar8xxx_reg_set(priv, AR8327_REG_PORT_LOOKUP(priv->source_port),
 			   AR8327_PORT_LOOKUP_ING_MIRROR_EN);
 
 	if (priv->mirror_tx)
-		ar8xxx_rmw(priv, AR8327_REG_PORT_HOL_CTRL1(priv->source_port),
-			   AR8327_PORT_HOL_CTRL1_EG_MIRROR_EN,
+		ar8xxx_reg_set(priv, AR8327_REG_PORT_HOL_CTRL1(priv->source_port),
 			   AR8327_PORT_HOL_CTRL1_EG_MIRROR_EN);
 }
 
-static struct switch_attr ar8327_sw_attr_globals[] = {
+static const struct switch_attr ar8327_sw_attr_globals[] = {
 	{
 		.type = SWITCH_TYPE_INT,
 		.name = "enable_vlan",

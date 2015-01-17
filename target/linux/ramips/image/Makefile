@@ -546,6 +546,8 @@ Image/Build/Profile/NCS601W=$(call BuildFirmware/Default8M/$(1),$(1),ncs601W,NCS
 nw718_mtd_size=3801088
 Image/Build/Profile/NW718=$(call BuildFirmware/CustomFlashFactory/$(1),$(1),nw718m,NW718,$(nw718_mtd_size),ARA1B4NCRNW718;1,factory)
 
+Image/Build/Profile/M2M=$(call BuildFirmware/Default8M/$(1),$(1),m2m,M2M,Linux Kernel Image)
+
 Image/Build/Profile/OMNI-EMB=$(call BuildFirmware/Default8M/$(1),$(1),omni-emb,OMNI-EMB)
 
 Image/Build/Profile/OMNI-PLUG=$(call BuildFirmware/Default8M/$(1),$(1),omni-plug,OMNI-PLUG)
@@ -694,6 +696,7 @@ define Image/Build/Profile/Default
 	$(call Image/Build/Profile/HT-TM02,$(1))
 	$(call Image/Build/Profile/HW550-3G,$(1))
 	$(call Image/Build/Profile/IP2202,$(1))
+	$(call Image/Build/Profile/M2M,$(1))
 	$(call Image/Build/Profile/M3,$(1))
 	$(call Image/Build/Profile/M4,$(1))
 	$(call Image/Build/Profile/MOFI3500-3GN,$(1))
@@ -828,6 +831,7 @@ Image/Build/Profile/MZK-750DHP=$(call BuildFirmware/Default8M/$(1),$(1),mzk-750d
 Image/Build/Profile/Y1=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1,Y1)
 Image/Build/Profile/Y1S=$(call BuildFirmware/Default16M/$(1),$(1),Lenovo-y1s,Y1S)
 Image/Build/Profile/MLW221=$(call BuildFirmware/Default16M/$(1),$(1),mlw221,MLW221)
+Image/Build/Profile/MLWG2=$(call BuildFirmware/Default16M/$(1),$(1),mlwg2,MLWG2)
 Image/Build/Profile/WMR300=$(call BuildFirmware/Default8M/$(1),$(1),wmr-300,WMR300)
 Image/Build/Profile/RT-N14U=$(call BuildFirmware/Default8M/$(1),$(1),rt-n14u,RT-N14U)
 Image/Build/Profile/WR8305RT=$(call BuildFirmware/Default8M/$(1),$(1),wr8305rt,WR8305RT)
@@ -855,6 +859,7 @@ define Image/Build/Profile/Default
 	$(call Image/Build/Profile/Y1,$(1))
 	$(call Image/Build/Profile/Y1S,$(1))
 	$(call Image/Build/Profile/MLW221,$(1))
+	$(call Image/Build/Profile/MLWG2,$(1))
 	$(call Image/Build/Profile/WMR300,$(1))
 	$(call Image/Build/Profile/RT-N14U,$(1))
 	$(call Image/Build/Profile/WR8305RT,$(1))

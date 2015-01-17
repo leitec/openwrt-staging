@@ -742,12 +742,11 @@ ar8236_init_globals(struct ar8xxx_priv *priv)
 		   AR8316_GCTRL_MTU, 9018 + 8 + 2);
 
 	/* enable cpu port to receive arp frames */
-	ar8xxx_rmw(priv, AR8216_REG_ATU_CTRL,
-		   AR8236_ATU_CTRL_RES, AR8236_ATU_CTRL_RES);
+	ar8xxx_reg_set(priv, AR8216_REG_ATU_CTRL,
+		   AR8236_ATU_CTRL_RES);
 
 	/* enable cpu port to receive multicast and broadcast frames */
-	ar8xxx_rmw(priv, AR8216_REG_FLOOD_MASK,
-		   AR8236_FM_CPU_BROADCAST_EN | AR8236_FM_CPU_BCAST_FWD_EN,
+	ar8xxx_reg_set(priv, AR8216_REG_FLOOD_MASK,
 		   AR8236_FM_CPU_BROADCAST_EN | AR8236_FM_CPU_BCAST_FWD_EN);
 
 	/* Enable MIB counters */
@@ -958,13 +957,11 @@ ar8216_set_mirror_regs(struct ar8xxx_priv *priv)
 		   AR8216_GLOBAL_CPUPORT_MIRROR_PORT,
 		   (0xF << AR8216_GLOBAL_CPUPORT_MIRROR_PORT_S));
 	for (port = 0; port < AR8216_NUM_PORTS; port++) {
-		ar8xxx_rmw(priv, AR8216_REG_PORT_CTRL(port),
-			   AR8216_PORT_CTRL_MIRROR_RX,
-			   0);
+		ar8xxx_reg_clear(priv, AR8216_REG_PORT_CTRL(port),
+			   AR8216_PORT_CTRL_MIRROR_RX);
 
-		ar8xxx_rmw(priv, AR8216_REG_PORT_CTRL(port),
-			   AR8216_PORT_CTRL_MIRROR_TX,
-			   0);
+		ar8xxx_reg_clear(priv, AR8216_REG_PORT_CTRL(port),
+			   AR8216_PORT_CTRL_MIRROR_TX);
 	}
 
 	/* now enable mirroring if necessary */
@@ -979,13 +976,11 @@ ar8216_set_mirror_regs(struct ar8xxx_priv *priv)
 		   (priv->monitor_port << AR8216_GLOBAL_CPUPORT_MIRROR_PORT_S));
 
 	if (priv->mirror_rx)
-		ar8xxx_rmw(priv, AR8216_REG_PORT_CTRL(priv->source_port),
-			   AR8216_PORT_CTRL_MIRROR_RX,
+		ar8xxx_reg_set(priv, AR8216_REG_PORT_CTRL(priv->source_port),
 			   AR8216_PORT_CTRL_MIRROR_RX);
 
 	if (priv->mirror_tx)
-		ar8xxx_rmw(priv, AR8216_REG_PORT_CTRL(priv->source_port),
-			   AR8216_PORT_CTRL_MIRROR_TX,
+		ar8xxx_reg_set(priv, AR8216_REG_PORT_CTRL(priv->source_port),
 			   AR8216_PORT_CTRL_MIRROR_TX);
 }
 
@@ -1277,7 +1272,7 @@ unlock:
 	return ret;
 }
 
-static struct switch_attr ar8xxx_sw_attr_globals[] = {
+static const struct switch_attr ar8xxx_sw_attr_globals[] = {
 	{
 		.type = SWITCH_TYPE_INT,
 		.name = "enable_vlan",
@@ -1326,7 +1321,7 @@ static struct switch_attr ar8xxx_sw_attr_globals[] = {
  	},
 };
 
-struct switch_attr ar8xxx_sw_attr_port[2] = {
+const struct switch_attr ar8xxx_sw_attr_port[2] = {
 	{
 		.type = SWITCH_TYPE_NOVAL,
 		.name = "reset_mib",
@@ -1342,7 +1337,7 @@ struct switch_attr ar8xxx_sw_attr_port[2] = {
 	},
 };
 
-struct switch_attr ar8xxx_sw_attr_vlan[1] = {
+const struct switch_attr ar8xxx_sw_attr_vlan[1] = {
 	{
 		.type = SWITCH_TYPE_INT,
 		.name = "vid",
