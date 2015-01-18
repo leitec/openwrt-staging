@@ -332,6 +332,20 @@ ar8xxx_phy_mmd_write(struct ar8xxx_priv *priv, int phy_addr, u16 addr, u16 data)
 	mutex_unlock(&bus->mdio_lock);
 }
 
+u16
+ar8xxx_phy_mmd_read(struct ar8xxx_priv *priv, int phy_addr, u16 addr)
+{
+	struct mii_bus *bus = priv->mii_bus;
+	u16 data;
+
+	mutex_lock(&bus->mdio_lock);
+	bus->write(bus, phy_addr, MII_ATH_MMD_ADDR, addr);
+	data = bus->read(bus, phy_addr, MII_ATH_MMD_DATA);
+	mutex_unlock(&bus->mdio_lock);
+
+	return data;
+}
+
 static int
 ar8xxx_reg_wait(struct ar8xxx_priv *priv, u32 reg, u32 mask, u32 val,
 		unsigned timeout)
@@ -452,6 +466,9 @@ ar8216_read_port_link(struct ar8xxx_priv *priv, int port,
 	link->duplex = !!(status & AR8216_PORT_STATUS_DUPLEX);
 	link->tx_flow = !!(status & AR8216_PORT_STATUS_TXFLOW);
 	link->rx_flow = !!(status & AR8216_PORT_STATUS_RXFLOW);
+
+	if (link->aneg && link->duplex && priv->chip->read_port_eee_status)
+		link->eee = priv->chip->read_port_eee_status(priv, port);
 
 	speed = (status & AR8216_PORT_STATUS_SPEED) >>
 		 AR8216_PORT_STATUS_SPEED_S;
@@ -1041,6 +1058,7 @@ int
 ar8xxx_sw_reset_switch(struct switch_dev *dev)
 {
 	struct ar8xxx_priv *priv = swdev_to_ar8xxx(dev);
+	const struct ar8xxx_chip *chip = priv->chip;
 	int i;
 
 	mutex_lock(&priv->reg_mutex);
@@ -1052,18 +1070,18 @@ ar8xxx_sw_reset_switch(struct switch_dev *dev)
 
 	/* Configure all ports */
 	for (i = 0; i < dev->ports; i++)
-		priv->chip->init_port(priv, i);
+		chip->init_port(priv, i);
 
 	priv->mirror_rx = false;
 	priv->mirror_tx = false;
 	priv->source_port = 0;
 	priv->monitor_port = 0;
 
-	priv->chip->init_globals(priv);
+	chip->init_globals(priv);
 
 	mutex_unlock(&priv->reg_mutex);
 
-	return ar8xxx_sw_hw_apply(dev);
+	return chip->sw_hw_apply(dev);
 }
 
 int
@@ -1194,7 +1212,7 @@ ar8xxx_sw_get_mirror_source_port(struct switch_dev *dev,
 	return 0;
 }
 
-static int
+int
 ar8xxx_sw_set_port_reset_mib(struct switch_dev *dev,
 			     const struct switch_attr *attr,
 			     struct switch_val *val)
@@ -1224,7 +1242,7 @@ unlock:
 	return ret;
 }
 
-static int
+int
 ar8xxx_sw_get_port_mib(struct switch_dev *dev,
 		       const struct switch_attr *attr,
 		       struct switch_val *val)
@@ -1390,6 +1408,7 @@ static const struct ar8xxx_chip ar8216_chip = {
 	.vtu_flush = ar8216_vtu_flush,
 	.vtu_load_vlan = ar8216_vtu_load_vlan,
 	.set_mirror_regs = ar8216_set_mirror_regs,
+	.sw_hw_apply = ar8xxx_sw_hw_apply,
 
 	.num_mibs = ARRAY_SIZE(ar8216_mibs),
 	.mib_decs = ar8216_mibs,
@@ -1416,6 +1435,7 @@ static const struct ar8xxx_chip ar8236_chip = {
 	.vtu_flush = ar8216_vtu_flush,
 	.vtu_load_vlan = ar8216_vtu_load_vlan,
 	.set_mirror_regs = ar8216_set_mirror_regs,
+	.sw_hw_apply = ar8xxx_sw_hw_apply,
 
 	.num_mibs = ARRAY_SIZE(ar8236_mibs),
 	.mib_decs = ar8236_mibs,
@@ -1442,6 +1462,7 @@ static const struct ar8xxx_chip ar8316_chip = {
 	.vtu_flush = ar8216_vtu_flush,
 	.vtu_load_vlan = ar8216_vtu_load_vlan,
 	.set_mirror_regs = ar8216_set_mirror_regs,
+	.sw_hw_apply = ar8xxx_sw_hw_apply,
 
 	.num_mibs = ARRAY_SIZE(ar8236_mibs),
 	.mib_decs = ar8236_mibs,
