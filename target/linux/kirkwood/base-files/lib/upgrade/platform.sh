@@ -13,6 +13,7 @@ platform_check_image() {
 		}
 		return 0
 		;;
+	"ea3500"|\
 	"ea4500")
 		[ "$magic" != "27051956" -a "$magic" != "73797375" ] && {
 			echo "Invalid image type."
@@ -34,6 +35,7 @@ platform_do_upgrade() {
 		PART_NAME="kernel:rootfs"
 		default_do_upgrade "$ARGV"
 		;;
+	"ea3500"|\
 	"ea4500")
 		platform_do_upgrade_linksys "$ARGV"
 		;;
