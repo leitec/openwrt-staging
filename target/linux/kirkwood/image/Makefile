@@ -86,16 +86,11 @@ define Image/Build/jffs2-nand-2048-128k
 endef
 
 define Image/Build/squashfs
-	$(call prepare_generic_squashfs,$(KDIR)/root.squashfs)
+ $(call prepare_generic_squashfs,$(KDIR)/root.squashfs)
 	( \
 		dd if=$(KDIR)/zImage bs=4096k conv=sync; \
 		dd if=$(KDIR)/root.$(1) bs=128k conv=sync; \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img
-
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=1536k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
 endef
 
 define BuildSysupgrade
@@ -126,15 +121,53 @@ Image/InstallKernel/Template/Generic=$(call Image/InstallKernel/Template)
 
 Image/BuildKernel/Template/DIR665=$(call Image/BuildKernel/Template,dir665)
 Image/InstallKernel/Template/DIR665=$(call Image/InstallKernel/Template,dir665)
+define Image/Build/Template/DIR665
+
+ ifeq ($(1),squashfs)
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=1536k conv=sync; \
+		dd if=$(KDIR)/root.$(1); \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
+ endif
+
+endef
 
 Image/BuildKernel/Template/DOCKSTAR=$(call Image/BuildKernel/Template,dockstar)
 Image/InstallKernel/Template/DOCKSTAR=$(call Image/InstallKernel/Template,dockstar)
 
 Image/BuildKernel/Template/EA3500=$(call Image/BuildKernel/Template,ea3500)
 Image/InstallKernel/Template/EA3500=$(call Image/InstallKernel/Template,ea3500)
+define Image/Build/Template/EA3500
+
+ ifeq ($(1),ubifs)
+	$(call BuildSysupgrade,$(1),ea3500)
+ endif
+
+ ifeq ($(1),ubi)
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2624k conv=sync; \
+		dd if=$(KDIR)/root.$(1); \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+ endif
+
+endef
 
 Image/BuildKernel/Template/EA4500=$(call Image/BuildKernel/Template,ea4500)
 Image/InstallKernel/Template/EA4500=$(call Image/InstallKernel/Template,ea4500)
+define Image/Build/Template/EA4500
+
+ ifeq ($(1),ubifs)
+	$(call BuildSysupgrade,$(1),ea4500)
+ endif
+
+ ifeq ($(1),ubi)
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2688k conv=sync; \
+		dd if=$(KDIR)/root.$(1); \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+ endif
+
+endef
 
 Image/BuildKernel/Template/GOFLEXNET=$(call Image/BuildKernel/Template,goflexnet)
 Image/InstallKernel/Template/GOFLEXNET=$(call Image/InstallKernel/Template,goflexnet)
@@ -177,16 +210,7 @@ define Image/Build
 		$(CP) $(KDIR)/root.$(1) $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img \
 	)
 
-	# ugly hack for the moment -- ea4500 specific
-	#
-	# sysupgrade .tar bundle -- use 'ubifs' variant only
-	$(call BuildSysupgrade,$(1),ea4500)
-
-	# factory-compatible image -- use 'ubi' variant only
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2688k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+	$(call Image/Build/Template/$(PROFILE),$(1))
 endef
 
 $(eval $(call BuildImage))
