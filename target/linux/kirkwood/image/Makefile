@@ -86,7 +86,7 @@ define Image/Build/jffs2-nand-2048-128k
 endef
 
 define Image/Build/squashfs
- $(call prepare_generic_squashfs,$(KDIR)/root.squashfs)
+	$(call prepare_generic_squashfs,$(KDIR)/root.squashfs)
 	( \
 		dd if=$(KDIR)/zImage bs=4096k conv=sync; \
 		dd if=$(KDIR)/root.$(1) bs=128k conv=sync; \
