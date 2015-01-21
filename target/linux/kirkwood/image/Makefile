@@ -132,42 +132,33 @@ define Image/Build/Template/DIR665
 
 endef
 
+# $(1) - filesystem type
+# $(2) - kernel block size for factory image
+define Image/Build/Template/Linksys
+
+ ifeq ($(1),ubifs)
+	$(call BuildSysupgrade,$(1),$(call sanitize_profile_name))
+ endif
+
+ ifeq ($(1),ubi)
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=$(2) conv=sync; \
+		dd if=$(KDIR)/root.$(1); \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+ endif
+
+endef
+
 Image/BuildKernel/Template/DOCKSTAR=$(call Image/BuildKernel/Template,dockstar)
 Image/InstallKernel/Template/DOCKSTAR=$(call Image/InstallKernel/Template,dockstar)
 
 Image/BuildKernel/Template/EA3500=$(call Image/BuildKernel/Template,ea3500)
 Image/InstallKernel/Template/EA3500=$(call Image/InstallKernel/Template,ea3500)
-define Image/Build/Template/EA3500
-
- ifeq ($(1),ubifs)
-	$(call BuildSysupgrade,$(1),ea3500)
- endif
-
- ifeq ($(1),ubi)
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2624k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
- endif
-
-endef
+Image/Build/Template/EA3500=$(call Image/Build/Template/Linksys,$(1),2624k)
 
 Image/BuildKernel/Template/EA4500=$(call Image/BuildKernel/Template,ea4500)
 Image/InstallKernel/Template/EA4500=$(call Image/InstallKernel/Template,ea4500)
-define Image/Build/Template/EA4500
-
- ifeq ($(1),ubifs)
-	$(call BuildSysupgrade,$(1),ea4500)
- endif
-
- ifeq ($(1),ubi)
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=2688k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
- endif
-
-endef
+Image/Build/Template/EA4500=$(call Image/Build/Template/Linksys,$(1),2688k)
 
 Image/BuildKernel/Template/GOFLEXNET=$(call Image/BuildKernel/Template,goflexnet)
 Image/InstallKernel/Template/GOFLEXNET=$(call Image/InstallKernel/Template,goflexnet)
