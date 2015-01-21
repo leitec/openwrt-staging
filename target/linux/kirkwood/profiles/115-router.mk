@@ -9,9 +9,8 @@ define Profile/DIR665
   NAME:=D-Link DIR-665
   PACKAGES:= \
 	kmod-mwl8k kmod-usb2 kmod-usb-storage \
-	kmod-leds-gpio kmod-ledtrig-netdev \
-	kmod-ledtrig-usbdev wpad-mini \
-	swconfig
+	kmod-ledtrig-netdev kmod-ledtrig-usbdev \
+	swconfig wpad-mini
 endef
 
 define Profile/DIR665/Description
