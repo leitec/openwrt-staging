@@ -116,22 +116,6 @@ define Image/Build/ubi
  endif
 endef
 
-Image/BuildKernel/Template/Generic=$(call Image/BuildKernel/Template)
-Image/InstallKernel/Template/Generic=$(call Image/InstallKernel/Template)
-
-Image/BuildKernel/Template/DIR665=$(call Image/BuildKernel/Template,dir665)
-Image/InstallKernel/Template/DIR665=$(call Image/InstallKernel/Template,dir665)
-define Image/Build/Template/DIR665
-
- ifeq ($(1),squashfs)
-	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=1536k conv=sync; \
-		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
- endif
-
-endef
-
 # $(1) - filesystem type
 # $(2) - kernel block size for factory image
 define Image/Build/Template/Linksys
@@ -145,6 +129,22 @@ define Image/Build/Template/Linksys
 		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=$(2) conv=sync; \
 		dd if=$(KDIR)/root.$(1); \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+ endif
+
+endef
+
+Image/BuildKernel/Template/Generic=$(call Image/BuildKernel/Template)
+Image/InstallKernel/Template/Generic=$(call Image/InstallKernel/Template)
+
+Image/BuildKernel/Template/DIR665=$(call Image/BuildKernel/Template,dir665)
+Image/InstallKernel/Template/DIR665=$(call Image/InstallKernel/Template,dir665)
+define Image/Build/Template/DIR665
+
+ ifeq ($(1),squashfs)
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=1536k conv=sync; \
+		dd if=$(KDIR)/root.$(1); \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
  endif
 
 endef
