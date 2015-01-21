@@ -25,7 +25,7 @@
 				reg = <0 0>;
 				linux,modalias = "m25p80", "en25q64";
 				spi-max-frequency = <10000000>;
-				m25p,chunked-io = <1>;
+				m25p,chunked-io = <32>;
 
 				partition@0 {
 					label = "u-boot";
@@ -51,6 +51,10 @@
 				};
 			};
 		};
+	};
+
+	sdhci@10130000 {
+		status = "okay";
 	};
 
 	pcie@10140000 {

@@ -18,26 +18,12 @@
 #include <linux/module.h>
 
 #include <asm/mach-ralink/ralink_regs.h>
-#ifdef CONFIG_SOC_MT7620
-static inline int soc_is_rt3352(void)
-{
-	return 0;
-}
-
-static inline int soc_is_rt3052(void)
-{
-	return 0;
-}
-#else
-#include <asm/mach-ralink/rt305x.h>
-#endif
 
 #include "ralink_soc_eth.h"
 #include "mdio_rt2880.h"
 
 #define RT305X_RESET_FE         BIT(21)
 #define RT305X_RESET_ESW        BIT(23)
-#define SYSC_REG_RESET_CTRL     0x034
 
 static const u32 rt5350_reg_table[FE_REG_COUNT] = {
 	[FE_REG_PDMA_GLO_CFG] = RT5350_PDMA_GLO_CFG,
@@ -46,11 +32,14 @@ static const u32 rt5350_reg_table[FE_REG_COUNT] = {
 	[FE_REG_TX_BASE_PTR0] = RT5350_TX_BASE_PTR0,
 	[FE_REG_TX_MAX_CNT0] = RT5350_TX_MAX_CNT0,
 	[FE_REG_TX_CTX_IDX0] = RT5350_TX_CTX_IDX0,
+	[FE_REG_TX_DTX_IDX0] = RT5350_TX_DTX_IDX0,
 	[FE_REG_RX_BASE_PTR0] = RT5350_RX_BASE_PTR0,
 	[FE_REG_RX_MAX_CNT0] = RT5350_RX_MAX_CNT0,
 	[FE_REG_RX_CALC_IDX0] = RT5350_RX_CALC_IDX0,
+	[FE_REG_RX_DRX_IDX0] = RT5350_RX_DRX_IDX0,
 	[FE_REG_FE_INT_ENABLE] = RT5350_FE_INT_ENABLE,
 	[FE_REG_FE_INT_STATUS] = RT5350_FE_INT_STATUS,
+	[FE_REG_FE_RST_GL] = 0,
 	[FE_REG_FE_DMA_VID_BASE] = 0,
 };
 
@@ -68,14 +57,14 @@ static int rt3050_fwd_config(struct fe_priv *priv)
 {
 	int ret;
 
-	if (soc_is_rt3052()) {
+	if (ralink_soc != RT305X_SOC_RT3052) {
 		ret = fe_set_clock_cycle(priv);
 		if (ret)
 			return ret;
 	}
 
 	fe_fwd_config(priv);
-	if (!soc_is_rt3352())
+	if (ralink_soc != RT305X_SOC_RT3352)
 		fe_w32(FE_PSE_FQFC_CFG_INIT, FE_PSE_FQ_CFG);
 	fe_csum_config(priv);
 
@@ -84,8 +73,7 @@ static int rt3050_fwd_config(struct fe_priv *priv)
 
 static void rt305x_fe_reset(void)
 {
-	rt_sysc_w32(RT305X_RESET_FE, SYSC_REG_RESET_CTRL);
-	rt_sysc_w32(0, SYSC_REG_RESET_CTRL);
+	fe_reset(RT305X_RESET_FE);
 }
 
 static void rt5350_init_data(struct fe_soc_data *data,
@@ -126,15 +114,14 @@ static int rt5350_fwd_config(struct fe_priv *priv)
 	return 0;
 }
 
-static void rt5350_tx_dma(struct fe_priv *priv, int idx, struct sk_buff *skb)
+static void rt5350_tx_dma(struct fe_tx_dma *txd)
 {
-	priv->tx_dma[idx].txd4 = 0;
+	txd->txd4 = 0;
 }
 
 static void rt5350_fe_reset(void)
 {
-	rt_sysc_w32(RT305X_RESET_FE | RT305X_RESET_ESW, SYSC_REG_RESET_CTRL);
-	rt_sysc_w32(0, SYSC_REG_RESET_CTRL);
+	fe_reset(RT305X_RESET_FE | RT305X_RESET_ESW);
 }
 
 static struct fe_soc_data rt3050_data = {
@@ -145,8 +132,8 @@ static struct fe_soc_data rt3050_data = {
 	.pdma_glo_cfg = FE_PDMA_SIZE_8DWORDS,
 	.checksum_bit = RX_DMA_L4VALID,
 	.tx_udf_bit = TX_DMA_UDF,
-	.rx_dly_int = FE_RX_DLY_INT,
-	.tx_dly_int = FE_TX_DLY_INT,
+	.rx_int = FE_RX_DONE_INT,
+	.tx_int = FE_TX_DONE_INT,
 };
 
 static struct fe_soc_data rt5350_data = {
@@ -160,8 +147,8 @@ static struct fe_soc_data rt5350_data = {
 	.pdma_glo_cfg = FE_PDMA_SIZE_8DWORDS,
 	.checksum_bit = RX_DMA_L4VALID,
 	.tx_udf_bit = TX_DMA_UDF,
-	.rx_dly_int = RT5350_RX_DLY_INT,
-	.tx_dly_int = RT5350_TX_DLY_INT,
+	.rx_int = RT5350_RX_DONE_INT,
+	.tx_int = RT5350_TX_DONE_INT,
 };
 
 const struct of_device_id of_fe_match[] = {

@@ -12,6 +12,9 @@ get_status_led() {
 	3g300m | w150m)
 		status_led="tenda:blue:ap"
 		;;
+	ai-br100)
+		status_led="aigale:blue:wlan"
+		;;
 	ar670w)
 		status_led="ar670w:green:power"
 		;;
@@ -70,11 +73,14 @@ get_status_led() {
 		status_led="hlk-rm04:red:power"
 		;;
 	ht-tm02)
-		status_led="ht-tm02:white:status"
+		status_led="ht-tm02:blue:wlan"
 		;;
 	all0239-3g|\
 	hw550-3g)
 		status_led="hw550-3g:green:status"
+		;;
+	m2m)
+		status_led="m2m:blue:wifi"
 		;;
 	m3)
 		status_led="m3:blue:status"
@@ -84,6 +90,9 @@ get_status_led() {
 		;;
 	mlw221)
 		status_led="kingston:blue:status"
+		;;
+	mlwg2)
+		status_led="kingston:blue:system"
 		;;
 	mofi3500-3gn)
 		status_led="mofi3500-3gn:green:status"
@@ -170,6 +179,10 @@ get_status_led() {
 	wr8305rt)
 		status_led="wr8305rt:sys"
 		;;
+	wsr-600 | \
+	wsr-1166)
+		status_led="buffalo:orange:diag"
+		;;
 	wnce2001)
 		status_led="netgear:green:power"
 		;;
@@ -219,6 +232,9 @@ set_state() {
 		;;
 	failsafe)
 		status_led_blink_failsafe
+		;;
+	preinit_regular)
+		status_led_blink_preinit_regular
 		;;
 	done)
 		status_led_on

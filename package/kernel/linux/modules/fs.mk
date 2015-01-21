@@ -173,6 +173,26 @@ endef
 $(eval $(call KernelPackage,fs-ext4))
 
 
+define KernelPackage/fs-f2fs
+  SUBMENU:=$(FS_MENU)
+  TITLE:=F2FS filesystem support
+  DEPENDS:=@!LINUX_3_3
+  KCONFIG:= \
+	CONFIG_F2FS_FS \
+	CONFIG_F2FS_STAT_FS=y \
+	CONFIG_F2FS_FS_XATTR=n \
+	CONFIG_F2FS_CHECK_FS=n
+  FILES:=$(LINUX_DIR)/fs/f2fs/f2fs.ko
+  AUTOLOAD:=$(call AutoLoad,30,f2fs,1)
+endef
+
+define KernelPackage/fs-f2fs/description
+ Kernel module for F2FS filesystem support
+endef
+
+$(eval $(call KernelPackage,fs-f2fs))
+
+
 define KernelPackage/fuse
   SUBMENU:=$(FS_MENU)
   TITLE:=FUSE (Filesystem in Userspace) support
@@ -301,10 +321,18 @@ define KernelPackage/fs-nfs-common
   KCONFIG:= \
 	CONFIG_LOCKD \
 	CONFIG_SUNRPC
+ifeq ($(strip $(call CompareKernelPatchVer,$(KERNEL_PATCHVER),ge,3.18.0)),1)
+  FILES:= \
+	$(LINUX_DIR)/fs/nfs_common/grace.ko \
+	$(LINUX_DIR)/fs/lockd/lockd.ko \
+	$(LINUX_DIR)/net/sunrpc/sunrpc.ko
+  AUTOLOAD:=$(call AutoLoad,30,grace sunrpc lockd)
+else
   FILES:= \
 	$(LINUX_DIR)/fs/lockd/lockd.ko \
 	$(LINUX_DIR)/net/sunrpc/sunrpc.ko
   AUTOLOAD:=$(call AutoLoad,30,sunrpc lockd)
+endif
 endef
 
 $(eval $(call KernelPackage,fs-nfs-common))

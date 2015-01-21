@@ -33,20 +33,32 @@ enum fe_reg {
 	FE_REG_TX_BASE_PTR0,
 	FE_REG_TX_MAX_CNT0,
 	FE_REG_TX_CTX_IDX0,
+	FE_REG_TX_DTX_IDX0,
 	FE_REG_RX_BASE_PTR0,
 	FE_REG_RX_MAX_CNT0,
 	FE_REG_RX_CALC_IDX0,
+	FE_REG_RX_DRX_IDX0,
 	FE_REG_FE_INT_ENABLE,
 	FE_REG_FE_INT_STATUS,
 	FE_REG_FE_DMA_VID_BASE,
 	FE_REG_FE_COUNTER_BASE,
+	FE_REG_FE_RST_GL,
 	FE_REG_COUNT
 };
 
-#define FE_DRV_VERSION		"0.1.0"
+enum fe_work_flag {
+        FE_FLAG_RESET_PENDING,
+        FE_FLAG_MAX
+};
+
+#define FE_DRV_VERSION		"0.1.1"
 
 /* power of 2 to let NEXT_TX_DESP_IDX work */
+#ifdef CONFIG_SOC_MT7621
+#define NUM_DMA_DESC		(1 << 9)
+#else
 #define NUM_DMA_DESC		(1 << 7)
+#endif
 #define MAX_DMA_DESC		0xfff
 
 #define FE_DELAY_EN_INT		0x80
@@ -78,8 +90,22 @@ enum fe_reg {
 #define FE_TX_DLY_INT		BIT(1)
 #define FE_RX_DLY_INT		BIT(0)
 
+#define FE_RX_DONE_INT		FE_RX_DONE_INT0
+#define FE_TX_DONE_INT		(FE_TX_DONE_INT0 | FE_TX_DONE_INT1 | \
+				 FE_TX_DONE_INT2 | FE_TX_DONE_INT3)
+
 #define RT5350_RX_DLY_INT	BIT(30)
 #define RT5350_TX_DLY_INT	BIT(28)
+#define RT5350_RX_DONE_INT1	BIT(17)
+#define RT5350_RX_DONE_INT0	BIT(16)
+#define RT5350_TX_DONE_INT3	BIT(3)
+#define RT5350_TX_DONE_INT2	BIT(2)
+#define RT5350_TX_DONE_INT1	BIT(1)
+#define RT5350_TX_DONE_INT0	BIT(0)
+
+#define RT5350_RX_DONE_INT	(RT5350_RX_DONE_INT0 | RT5350_RX_DONE_INT1)
+#define RT5350_TX_DONE_INT	(RT5350_TX_DONE_INT0 | RT5350_TX_DONE_INT1 | \
+				 RT5350_TX_DONE_INT2 | RT5350_TX_DONE_INT3)
 
 /* registers */
 #define FE_FE_OFFSET		0x0000
@@ -125,7 +151,11 @@ enum fe_reg {
 #define FE_CDMA_CSG_CFG		(FE_CDMA_OFFSET + 0x00)
 #define FE_CDMA_SCH_CFG		(FE_CDMA_OFFSET + 0x04)
 
+#ifdef CONFIG_SOC_MT7621
+#define MT7620A_GDMA_OFFSET		0x0500
+#else
 #define MT7620A_GDMA_OFFSET		0x0600
+#endif
 #define	MT7620A_GDMA1_FWD_CFG		(MT7620A_GDMA_OFFSET + 0x00)
 #define MT7620A_FE_GDMA1_SCH_CFG	(MT7620A_GDMA_OFFSET + 0x04)
 #define MT7620A_FE_GDMA1_SHPR_CFG	(MT7620A_GDMA_OFFSET + 0x08)
@@ -259,6 +289,7 @@ enum fe_reg {
 #define FE_PST_DTX_IDX1		BIT(1)
 #define FE_PST_DTX_IDX0		BIT(0)
 
+#define FE_RX_2B_OFFSET		BIT(31)
 #define FE_TX_WB_DDONE		BIT(6)
 #define FE_RX_DMA_BUSY		BIT(3)
 #define FE_TX_DMA_BUSY		BIT(1)
@@ -294,6 +325,7 @@ struct fe_rx_dma {
 #define TX_DMA_LS0		BIT(30)
 #define TX_DMA_DONE		BIT(31)
 
+#define TX_DMA_INS_VLAN_MT7621	BIT(16)
 #define TX_DMA_INS_VLAN		BIT(7)
 #define TX_DMA_INS_PPPOE	BIT(12)
 #define TX_DMA_QN(_x)		((_x) << 16)
@@ -347,8 +379,7 @@ struct fe_soc_data
 	void (*reset_fe)(void);
 	void (*set_mac)(struct fe_priv *priv, unsigned char *mac);
 	int (*fwd_config)(struct fe_priv *priv);
-	void (*tx_dma)(struct fe_priv *priv, int idx, struct sk_buff *skb);
-	void (*rx_dma)(struct fe_priv *priv, int idx, int len);
+	void (*tx_dma)(struct fe_tx_dma *txd);
 	int (*switch_init)(struct fe_priv *priv);
 	int (*switch_config)(struct fe_priv *priv);
 	void (*port_init)(struct fe_priv *priv, struct device_node *port);
@@ -361,8 +392,8 @@ struct fe_soc_data
 
 	void *swpriv;
 	u32 pdma_glo_cfg;
-	u32 rx_dly_int;
-	u32 tx_dly_int;
+	u32 rx_int;
+	u32 tx_int;
 	u32 checksum_bit;
 	u32 tx_udf_bit;
 };
@@ -370,6 +401,9 @@ struct fe_soc_data
 #define FE_FLAG_PADDING_64B		BIT(0)
 #define FE_FLAG_PADDING_BUG		BIT(1)
 #define FE_FLAG_JUMBO_FRAME		BIT(2)
+#define FE_FLAG_RX_2B_OFFSET		BIT(3)
+#define FE_FLAG_RX_SG_DMA		BIT(4)
+#define FE_FLAG_RX_VLAN_CTAG		BIT(5)
 
 #define FE_STAT_REG_DECLARE		\
 	_FE(tx_bytes)			\
@@ -426,6 +460,9 @@ struct fe_priv
 	int				link[8];
 
 	struct fe_hw_stats		*hw_stats;
+	unsigned long			vlan_map;
+	struct work_struct		pending_work;
+	DECLARE_BITMAP(pending_flags, FE_FLAG_MAX);
 };
 
 extern const struct of_device_id of_fe_match[];
@@ -439,6 +476,8 @@ void fe_stats_update(struct fe_priv *priv);
 void fe_fwd_config(struct fe_priv *priv);
 void fe_reg_w32(u32 val, enum fe_reg reg);
 u32 fe_reg_r32(enum fe_reg reg);
+
+void fe_reset(u32 reset_bits);
 
 static inline void *priv_netdev(struct fe_priv *priv)
 {
