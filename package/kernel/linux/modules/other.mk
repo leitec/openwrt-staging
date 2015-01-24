@@ -13,7 +13,7 @@ WATCHDOG_DIR:=watchdog
 define KernelPackage/6lowpan-iphc
   USBMENU:=$(OTHER_MENU)
   TITLE:=6lowpan shared code
-  DEPENDS:=@!LINUX_3_3 @!LINUX_3_8 @!LINUX_3_10 @!LINUX_3_13
+  DEPENDS:=@!LINUX_3_8 @!LINUX_3_10 @!LINUX_3_13
   KCONFIG:=CONFIG_6LOWPAN_IPHC
   HIDDEN:=1
   FILES:=$(LINUX_DIR)/net/ieee802154/6lowpan_iphc.ko
@@ -29,7 +29,7 @@ $(eval $(call KernelPackage,6lowpan-iphc))
 define KernelPackage/bluetooth
   SUBMENU:=$(OTHER_MENU)
   TITLE:=Bluetooth support
-  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-crypto-hash +(!LINUX_3_3&&!LINUX_3_8&&!LINUX_3_10&&!LINUX_3_13):kmod-6lowpan-iphc
+  DEPENDS:=@USB_SUPPORT +kmod-usb-core +kmod-crypto-hash +(!LINUX_3_8&&!LINUX_3_10&&!LINUX_3_13):kmod-6lowpan-iphc
   KCONFIG:= \
 	CONFIG_BLUEZ \
 	CONFIG_BLUEZ_L2CAP \
@@ -68,6 +68,26 @@ define KernelPackage/bluetooth/description
 endef
 
 $(eval $(call KernelPackage,bluetooth))
+
+
+define KernelPackage/bluetooth_6lowpan
+  SUBMENU:=$(OTHER_MENU)
+  TITLE:=Bluetooth 6LoWPAN support
+  DEPENDS:=+kmod-bluetooth @!(LINUX_3_8||LINUX_3_10||LINUX_3_13||LINUX_3_14)
+  KCONFIG:= \
+  CONFIG_6LOWPAN=m \
+  CONFIG_BT_6LOWPAN=m
+  FILES:= \
+       $(LINUX_DIR)/net/bluetooth/bluetooth_6lowpan.ko \
+       $(LINUX_DIR)/net/6lowpan/6lowpan.ko
+       AUTOLOAD:=$(call AutoProbe,bluetooth)
+endef
+
+define KernelPackage/bluetooth_6lowpan/description
+ Kernel support for 6LoWPAN over Bluetooth Low Energy devices
+endef
+
+$(eval $(call KernelPackage,bluetooth_6lowpan))
 
 
 define KernelPackage/bluetooth-hci-h4p
@@ -211,7 +231,6 @@ $(eval $(call KernelPackage,gpio-pcf857x))
 
 define KernelPackage/iio-core
   SUBMENU:=$(OTHER_MENU)
-  DEPENDS:=@!LINUX_3_3 @!LINUX_3_6
   TITLE:=Industrial IO core
   KCONFIG:= \
 	CONFIG_IIO \
@@ -729,7 +748,7 @@ $(eval $(call KernelPackage,ikconfig))
 define KernelPackage/zram
   SUBMENU:=$(OTHER_MENU)
   TITLE:=ZRAM
-  DEPENDS:=@!LINUX_3_3 +kmod-lib-lzo
+  DEPENDS:=+kmod-lib-lzo
   KCONFIG:= \
 	CONFIG_ZSMALLOC \
 	CONFIG_ZRAM \
