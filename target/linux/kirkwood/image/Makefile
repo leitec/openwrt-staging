@@ -91,6 +91,11 @@ define Image/Build/squashfs
 		dd if=$(KDIR)/zImage bs=4096k conv=sync; \
 		dd if=$(KDIR)/root.$(1) bs=128k conv=sync; \
 	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img
+
+ ifneq ($($(PROFILE)_UBI_OPTS),)
+	$(call Image/Build/UbinizeImage,$(call sanitize_profile_name),,squashfs,$($(PROFILE)_UBI_OPTS))
+ endif
+
 endef
 
 define BuildSysupgrade
@@ -122,6 +127,14 @@ define Image/Build/Template/Linksys
 
  ifeq ($(1),ubifs)
 	$(call BuildSysupgrade,$(1),$(call sanitize_profile_name))
+ endif
+
+ ifeq ($(1),squashfs)
+	$(call BuildSysupgrade,$(1),$(call sanitize_profile_name))
+	( \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=$(2) conv=sync; \
+		dd if=$(KDIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-ubinized.bin; \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
  endif
 
  ifeq ($(1),ubi)
