@@ -9,6 +9,9 @@ get_status_led() {
 	dir665)
 		status_led="dir665:blue:status"
 		;;
+	ea3500)
+		status_led="ea3500:green:power"
+		;;
 	ea4500)
 		status_led="ea4500:white:health"
 		;;
