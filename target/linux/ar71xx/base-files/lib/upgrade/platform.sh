@@ -297,10 +297,12 @@ platform_check_image() {
 	el-m150 | \
 	el-mini | \
 	gl-inet | \
+	mc-mac1200r | \
 	oolite | \
 	smart-300 | \
 	tl-mr10u | \
 	tl-mr11u | \
+	tl-mr12u | \
 	tl-mr13u | \
 	tl-mr3020 | \
 	tl-mr3040 | \
@@ -333,6 +335,7 @@ platform_check_image() {
 	tl-wr841n-v9 | \
 	tl-wr842n-v2 | \
 	tl-wr941nd | \
+	tl-wr941nd-v5 | \
 	tl-wr1041n-v2 | \
 	tl-wr1043nd | \
 	tl-wr1043nd-v2 | \

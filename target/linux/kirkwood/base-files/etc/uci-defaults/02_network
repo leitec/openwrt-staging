@@ -34,15 +34,10 @@ case "$board" in
 	ucidef_add_switch_vlan "switch0" "1" "0 1 2 3 6"
 	ucidef_add_switch_vlan "switch0" "2" "4 5"
 	;;
-"dockstar")
-	set_lan_dhcp "eth0"
-	;;
-"iconnect")
-	set_lan_dhcp "eth0"
-	;;
-"ib62x0")
-	set_lan_dhcp "eth0"
-	;;
+"dockstar"|\
+"goflexnet"|\
+"iconnect"|\
+"ib62x0"|\
 "pogo_e02")
 	set_lan_dhcp "eth0"
 	;;

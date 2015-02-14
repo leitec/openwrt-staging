@@ -88,9 +88,7 @@ get_status_led() {
 	m4)
 		status_led="m4:blue:status"
 		;;
-	mlw221)
-		status_led="kingston:blue:status"
-		;;
+	mlw221|\
 	mlwg2)
 		status_led="kingston:blue:system"
 		;;
@@ -209,6 +207,9 @@ get_status_led() {
 		;;
 	xdxrn502j)
 		status_led="xdxrn502j:green:power"
+		;;
+	xiaomi-mini)
+		status_led="xiaomi:red:status"
 		;;
 	f7c027)
 		status_led="belkin:orange:status"
