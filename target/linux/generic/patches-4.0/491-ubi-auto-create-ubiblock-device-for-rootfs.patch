@@ -46,7 +46,7 @@ Signed-off-by: Daniel Golle <daniel@makrotopia.org>
 +
 +		ret = ubiblock_create(&vi);
 +		if (ret)
-+			ubi_err("block: can't add '%s' volume, err=%d\n",
++			pr_err("UBI error: block: can't add '%s' volume, err=%d\n",
 +				vi.name, ret);
 +		/* always break if we get here */
 +		break;
