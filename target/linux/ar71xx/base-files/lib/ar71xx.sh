@@ -130,6 +130,9 @@ tplink_board_detect() {
 	"075000"*)
 		model="TP-Link TL-WA750RE"
 		;;
+	"721000"*)
+		model="TP-Link TL-WA7210N"
+		;;
 	"751000"*)
 		model="TP-Link TL-WA7510N"
 		;;
@@ -651,6 +654,9 @@ ar71xx_board_detect() {
 	*"TL-WA701ND v2")
 		name="tl-wa701nd-v2"
 		;;
+	*"TL-WA7210N v2")
+		name="tl-wa7210n-v2"
+		;;
 	*TL-WA750RE)
 		name="tl-wa750re"
 		;;
@@ -764,6 +770,9 @@ ar71xx_board_detect() {
 		;;
 	*WPE72)
 		name="wpe72"
+		;;
+	*WPJ558)
+		name="wpj558"
 		;;
 	*WNDAP360)
 		name="wndap360"

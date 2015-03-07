@@ -325,6 +325,7 @@ tl-mr3020 |\
 tl-mr3040 |\
 tl-mr3040-v2 |\
 tl-wa701nd-v2 |\
+tl-wa7210n-v2 |\
 tl-wa750re |\
 tl-wa850re |\
 tl-wa830re-v2 |\
@@ -356,6 +357,13 @@ tl-wr710n |\
 tl-wr720n-v3|\
 wpe72)
 	ucidef_set_interfaces_lan_wan "eth1" "eth0"
+	;;
+
+wpj558)
+	ucidef_set_interfaces_lan_wan "eth0.1" "eth0.2"
+	ucidef_add_switch "switch0" "1" "1"
+	ucidef_add_switch_vlan "switch0" "1" "5 6t"
+	ucidef_add_switch_vlan "switch0" "2" "1 6t"
 	;;
 
 ap121 |\
