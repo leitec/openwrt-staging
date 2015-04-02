@@ -268,6 +268,8 @@ define BuildImage/mkfs
   .PHONY: mkfs-$(1)
   mkfs-$(1): mkfs_prepare
 	$(Image/mkfs/$(1))
+	$(call Build/mkfs/default,$(1))
+	$(call Build/mkfs/$(1),$(1))
   $(KDIR)/root.$(1): mkfs-$(1)
 
 endef
@@ -351,7 +353,7 @@ define Device/ExportVar
   $(1) : $(2):=$$($(2))
 
 endef
-Device/Export = $(foreach var,$(DEVICE_VARS) KERNEL,$(call Device/ExportVar,$(1),$(var)))
+Device/Export = $(foreach var,$(DEVICE_VARS) KERNEL KERNEL_INITRAMFS,$(call Device/ExportVar,$(1),$(var)))
 
 define Device/Check
   _TARGET = $$(if $$(filter $(PROFILE),$$(PROFILES)),install,install-disabled)
@@ -376,6 +378,7 @@ define Device/Build/check_size
 endef
 
 define Device/Build/kernel
+  $(KDIR)/$$(KERNEL_NAME): image_prepare
   $$(_TARGET): $$(if $$(KERNEL_INSTALL),$(BIN_DIR)/$$(KERNEL_IMAGE))
   $(BIN_DIR)/$$(KERNEL_IMAGE): $(KDIR)/$$(KERNEL_IMAGE)
 	cp $$^ $$@
@@ -386,6 +389,7 @@ define Device/Build/kernel
 endef
 
 define Device/Build/image
+  FILESYSTEM := $(1)
   $$(_TARGET): $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2))
   $(eval $(call Device/Export,$(KDIR)/$(KERNEL_IMAGE)))
   $(eval $(call Device/Export,$(KDIR)/$(KERNEL_INITRAMFS_IMAGE)))
@@ -395,6 +399,7 @@ define Device/Build/image
 	[ -f $$(word 1,$$^) -a -f $$(word 2,$$^) ]
 	$$(call concat_cmd,$(if $(IMAGE/$(2)/$(1)),$(IMAGE/$(2)/$(1)),$(IMAGE/$(2))))
 
+  .IGNORE: $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2))
   $(BIN_DIR)/$(call IMAGE_NAME,$(1),$(2)): $(KDIR)/$(call IMAGE_NAME,$(1),$(2))
 	cp $$^ $$@
 

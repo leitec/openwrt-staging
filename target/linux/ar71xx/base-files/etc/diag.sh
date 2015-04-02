@@ -142,7 +142,8 @@ get_status_led() {
 	om2p-lc)
 		status_led="om2p:blue:power"
 		;;
-	om5p)
+	om5p | \
+	om5p-an)
 		status_led="om5p:blue:power"
 		;;
 	pb44)
@@ -292,6 +293,9 @@ get_status_led() {
 		;;
 	wp543)
 		status_led="wp543:green:diag"
+		;;
+	wpj558)
+		status_led="wpj558:green:sig3"
 		;;
 	wrt400n)
 		status_led="wrt400n:blue:wps"

@@ -1,13 +1,13 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=ubox
-PKG_VERSION:=2015-02-26
+PKG_VERSION:=2015-04-02
 PKG_RELEASE=$(PKG_SOURCE_VERSION)
 
 PKG_SOURCE_PROTO:=git
 PKG_SOURCE_URL:=git://nbd.name/luci2/ubox.git
 PKG_SOURCE_SUBDIR:=$(PKG_NAME)-$(PKG_VERSION)
-PKG_SOURCE_VERSION:=1dce0407268937cdf37b9c0643632e6c31f5792a
+PKG_SOURCE_VERSION:=6fbafd7d5b2835d00eb9d1684e7c6ccf907177b8
 PKG_SOURCE:=$(PKG_NAME)-$(PKG_VERSION)-$(PKG_SOURCE_VERSION).tar.gz
 CMAKE_INSTALL:=1
 PKG_CHECK_FORMAT_SECURITY:=0
@@ -20,12 +20,12 @@ PKG_MAINTAINER:=John Crispin <blogic@openwrt.org>
 include $(INCLUDE_DIR)/package.mk
 include $(INCLUDE_DIR)/cmake.mk
 
-TARGET_LDFLAGS += $(if $(CONFIG_USE_EGLIBC),-lrt)
+TARGET_LDFLAGS += $(if $(CONFIG_USE_GLIBC),-lrt)
 
 define Package/ubox
   SECTION:=base
   CATEGORY:=Base system
-  DEPENDS:=+libubox +ubusd +ubus +libubus +libuci +USE_EGLIBC:librt
+  DEPENDS:=+libubox +ubusd +ubus +libubus +libuci +USE_GLIBC:librt
   TITLE:=OpenWrt system helper toolbox
 endef
 
