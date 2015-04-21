@@ -184,6 +184,7 @@ platform_check_image() {
 	db120 | \
 	f9k1115v2 |\
 	hornet-ub | \
+	wpj344 | \
 	wpj558 | \
 	zcn-1523h-2 | \
 	zcn-1523h-5)
@@ -224,6 +225,7 @@ platform_check_image() {
 	loco-m-xw | \
 	nanostation-m | \
 	rocket-m | \
+	rocket-m-xw | \
 	nanostation-m-xw | \
 	rw2458n | \
 	wndap360 | \
@@ -288,7 +290,8 @@ platform_check_image() {
 	om2p-hs | \
 	om2p-hsv2 | \
 	om2p-lc | \
-	om5p)
+	om5p | \
+	om5p-an)
 		platform_check_image_openmesh "$magic_long" "$1" && return 0
 		return 1
 		;;
@@ -488,7 +491,8 @@ platform_do_upgrade() {
 	om2p-hs | \
 	om2p-hsv2 | \
 	om2p-lc | \
-	om5p)
+	om5p | \
+	om5p-an)
 		platform_do_upgrade_openmesh "$ARGV"
 		;;
 	unifi-outdoor-plus | \

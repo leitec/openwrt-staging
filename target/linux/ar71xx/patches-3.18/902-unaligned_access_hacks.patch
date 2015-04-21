@@ -593,7 +593,7 @@
  
 --- a/net/sched/cls_u32.c
 +++ b/net/sched/cls_u32.c
-@@ -148,7 +148,7 @@ next_knode:
+@@ -151,7 +151,7 @@ next_knode:
  			data = skb_header_pointer(skb, toff, 4, &hdata);
  			if (!data)
  				goto out;
@@ -602,7 +602,7 @@
  				n = rcu_dereference_bh(n->next);
  				goto next_knode;
  			}
-@@ -201,8 +201,8 @@ check_terminal:
+@@ -204,8 +204,8 @@ check_terminal:
  						  &hdata);
  			if (!data)
  				goto out;
@@ -869,12 +869,12 @@
  
 --- a/net/ipv6/netfilter/nf_log_ipv6.c
 +++ b/net/ipv6/netfilter/nf_log_ipv6.c
-@@ -63,9 +63,10 @@ static void dump_ipv6_packet(struct nf_l
+@@ -63,9 +63,9 @@ static void dump_ipv6_packet(struct nf_l
  	/* Max length: 44 "LEN=65535 TC=255 HOPLIMIT=255 FLOWLBL=FFFFF " */
  	nf_log_buf_add(m, "LEN=%Zu TC=%u HOPLIMIT=%u FLOWLBL=%u ",
  	       ntohs(ih->payload_len) + sizeof(struct ipv6hdr),
+-	       (ntohl(*(__be32 *)ih) & 0x0ff00000) >> 20,
 +	       (ntohl(net_hdr_word(ih)) & 0x0ff00000) >> 20,
- 	       (ntohl(*(__be32 *)ih) & 0x0ff00000) >> 20,
  	       ih->hop_limit,
 -	       (ntohl(*(__be32 *)ih) & 0x000fffff));
 +	       (ntohl(net_hdr_word(ih)) & 0x000fffff));

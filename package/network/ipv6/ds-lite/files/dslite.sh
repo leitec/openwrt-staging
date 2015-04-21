@@ -12,7 +12,7 @@
 proto_dslite_setup() {
 	local cfg="$1"
 	local iface="$2"
-	local link="dslite-$cfg"
+	local link="ds-$cfg"
 
 	local mtu ttl peeraddr ip6addr tunlink zone weakif
 	json_get_vars mtu ttl peeraddr ip6addr tunlink zone weakif
@@ -24,6 +24,17 @@ proto_dslite_setup() {
 	}
 
 	( proto_add_host_dependency "$cfg" "::" "$tunlink" )
+
+	peeraddr=$(resolveip -6 $peeraddr)
+	if [ -z "$peeraddr" ]; then
+		sleep 3
+		peeraddr=$(resolveip -6 $peeraddr)
+		if [ -z "$peeraddr" ]; then
+			proto_notify_error "$cfg" "AFTR_DNS_FAIL"
+			return
+		fi
+	fi
+	peeraddr="${peeraddr%% *}"
 
 	[ -z "$ip6addr" ] && {
 		local wanif="$tunlink"
