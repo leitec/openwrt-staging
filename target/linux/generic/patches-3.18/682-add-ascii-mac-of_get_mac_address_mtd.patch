@@ -1,24 +1,6 @@
-From f7d3f7790b75b098e1c92530dc3d28ba3b40b5a4 Mon Sep 17 00:00:00 2001
-From: Jonas Gorski <jogo@openwrt.org>
-Date: Sat, 10 Aug 2013 12:48:51 +0200
-Subject: [PATCH 28/29] of: add support for parsing mac addresses from mtd
-
-Signed-off-by: Jonas Gorski <jogo@openwrt.org>
----
- drivers/of/of_net.c | 100 +++++++++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 99 insertions(+), 1 deletion(-)
-
 --- a/drivers/of/of_net.c
 +++ b/drivers/of/of_net.c
-@@ -10,6 +10,7 @@
- #include <linux/of_net.h>
- #include <linux/phy.h>
- #include <linux/export.h>
-+#include <linux/mtd/mtd.h>
- 
- /**
-  * of_get_phy_mode - Get phy mode for given device_node
-@@ -38,6 +39,103 @@ int of_get_phy_mode(struct device_node *
+@@ -39,6 +39,103 @@ int of_get_phy_mode(struct device_node *
  }
  EXPORT_SYMBOL_GPL(of_get_phy_mode);
  
@@ -122,7 +104,7 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
  /**
   * Search the device tree for the best MAC address to use.  'mac-address' is
   * checked first, because that is supposed to contain to "most recent" MAC
-@@ -72,6 +170,6 @@ const void *of_get_mac_address(struct de
+@@ -73,42 +170,6 @@ const void *of_get_mac_address(struct de
  	if (pp && (pp->length == 6) && is_valid_ether_addr(pp->value))
  		return pp->value;
  
@@ -130,3 +112,39 @@ Signed-off-by: Jonas Gorski <jogo@openwrt.org>
 +	return of_get_mac_address_mtd(np);
  }
  EXPORT_SYMBOL(of_get_mac_address);
+-
+-int of_get_mac_address_mtd(struct device_node *np, void *mac)
+-{
+-	struct device_node *mtd_np = NULL;
+-	size_t retlen;
+-	int size, ret;
+-	struct mtd_info *mtd;
+-	const char *part;
+-	const __be32 *list;
+-	phandle phandle;
+-
+-	list = of_get_property(np, "mtd-mac-address", &size);
+-	if (!list || (size != (2 * sizeof(*list))))
+-		return -ENOENT;
+-
+-	phandle = be32_to_cpup(list++);
+-	if (phandle)
+-		mtd_np = of_find_node_by_phandle(phandle);
+-
+-	if (!mtd_np)
+-		return -ENOENT;
+-
+-	part = of_get_property(mtd_np, "label", NULL);
+-	if (!part)
+-		part = mtd_np->name;
+-
+-	mtd = get_mtd_device_nm(part);
+-	if (IS_ERR(mtd))
+-		return PTR_ERR(mtd);
+-
+-	ret = mtd_read(mtd, be32_to_cpup(list), 6, &retlen, (u_char *) mac);
+-	put_mtd_device(mtd);
+-
+-	return ret;
+-}
+-EXPORT_SYMBOL_GPL(of_get_mac_address_mtd);
