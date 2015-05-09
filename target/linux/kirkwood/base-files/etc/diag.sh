@@ -10,6 +10,7 @@ get_status_led() {
 		status_led="dir665:blue:status"
 		;;
 	dockstar|\
+	goflexhome|\
 	goflexnet|\
 	pogo_e02)
 		status_led="status:orange:fault"

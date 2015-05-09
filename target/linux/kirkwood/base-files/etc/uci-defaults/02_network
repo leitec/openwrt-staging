@@ -35,6 +35,7 @@ case "$board" in
 	ucidef_add_switch_vlan "switch0" "2" "4 5"
 	;;
 "dockstar"|\
+"goflexhome"|\
 "goflexnet"|\
 "iconnect"|\
 "ib62x0"|\
