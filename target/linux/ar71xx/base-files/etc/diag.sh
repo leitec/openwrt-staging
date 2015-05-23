@@ -80,6 +80,9 @@ get_status_led() {
 	el-m150)
 		status_led="easylink:green:system"
 		;;
+	ew-dorin | ew-dorin-router)
+		status_led="dorin:green:status"
+		;;
 	f9k1115v2)
 		status_led="belkin:blue:status"
 		;;
@@ -108,6 +111,12 @@ get_status_led() {
 		;;
 	mc-mac1200r)
 		status_led="mercury:green:system"
+		;;
+	mr12)
+		status_led="mr12:green:power"
+		;;
+	mr16)
+		status_led="mr16:green:power"
 		;;
 	mr600)
 		status_led="mr600:orange:power"

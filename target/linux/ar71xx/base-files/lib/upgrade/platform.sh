@@ -184,6 +184,8 @@ platform_check_image() {
 	db120 | \
 	f9k1115v2 |\
 	hornet-ub | \
+	mr12 | \
+	mr16 | \
 	wpj558 | \
 	zcn-1523h-2 | \
 	zcn-1523h-5)
@@ -446,6 +448,19 @@ platform_check_image() {
 
 	echo "Sysupgrade is not yet supported on $board."
 	return 1
+}
+
+platform_pre_upgrade() {
+	local board=$(ar71xx_board_name)
+
+	case "$board" in
+	nbg6716 | \
+	r6100 | \
+	wndr3700v4 | \
+	wndr4300 )
+		nand_do_upgrade "$1"
+		;;
+	esac
 }
 
 platform_do_upgrade() {
