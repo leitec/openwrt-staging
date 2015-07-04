@@ -106,6 +106,9 @@ ramips_board_detect() {
 	*"DCS-930")
 		name="dcs-930"
 		;;
+	*"DCS-930L B1")
+		name="dcs-930l-b1"
+		;;
 	*"DIR-300 B1")
 		name="dir-300-b1"
 		;;
@@ -205,6 +208,9 @@ ramips_board_detect() {
 	*"Linksys E1700")
 		name="e1700"
 		;;
+	*"Linksys RE6500")
+		name="re6500"
+		;;
 	*"Planex MZK-750DHP")
 		name="mzk-750dhp"
 		;;
@@ -240,6 +246,15 @@ ramips_board_detect() {
 		;;
 	*"Omnima MiniPlug")
 		name="omni-plug"
+		;;
+	*"OLinuXino-RT5350F")
+		name="olinuxino-rt5350f"
+		;;
+	*"OLinuXino-RT5350F-EVB")
+		name="olinuxino-rt5350f-evb"
+		;;
+	*"PBR-M1")
+		name="pbr-m1"
 		;;
 	*"Petatel PSR-680W"*)
 		name="psr-680w"
