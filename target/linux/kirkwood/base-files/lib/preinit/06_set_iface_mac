@@ -1,0 +1,22 @@
+#
+# Copyright (C) 2014-2015 OpenWrt.org
+#
+
+preinit_set_mac_address() {
+	local lan_mac=""
+	local wan_mac=""
+
+	. /lib/functions.sh
+	. /lib/kirkwood.sh
+
+	case $(kirkwood_board_name) in
+	"dir665")
+		lan_mac=$(cat /sys/class/net/eth0/address)
+                wan_mac=$(macaddr_add "$lan_mac" 1)
+
+		ifconfig eth1 hw ether $wan_mac 2>/dev/null
+		;;
+	esac
+}
+
+boot_hook_add preinit_main preinit_set_mac_address
