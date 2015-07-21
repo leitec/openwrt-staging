@@ -12,6 +12,9 @@ get_status_led() {
 	3g150b | 3g300m | w150m)
 		status_led="tenda:blue:ap"
 		;;
+	a5-v11)
+		status_led="a5-v11:red:power"
+		;;
 	ai-br100)
 		status_led="aigale:blue:wlan"
 		;;
@@ -233,6 +236,9 @@ get_status_led() {
 	f7c027)
 		status_led="belkin:orange:status"
 		;;
+	oy-0001)
+		status_led="oy:green:wifi"
+		;;
 	na930)
 		status_led="na930:blue:power"
 		;;
@@ -242,6 +248,9 @@ get_status_led() {
 		;;
 	zte-q7)
 		status_led="zte:red:status"
+		;;
+	mzk-dp150n)
+		status_led="mzkdp150n:green:power"
 		;;
 	esac
 }

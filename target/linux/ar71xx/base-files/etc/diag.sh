@@ -12,7 +12,8 @@ get_status_led() {
 	all0305)
 		status_led="eap7660d:green:ds4"
 		;;
-	antminer-s1)
+	antminer-s1|\
+	antminer-s3)
 		status_led="bitmain:green:system"
 		;;
 	ap132)
@@ -40,6 +41,9 @@ get_status_led() {
 	bullet-m | rocket-m | rocket-m-xw | nano-m | nanostation-m | nanostation-m-xw | loco-m-xw)
 		status_led="ubnt:green:link4"
 		;;
+	rocket-m-ti)
+		status_led="ubnt:green:link6"
+		;;
 	bxu2000n-2-a1)
 		status_led="bhu:green:status"
 		;;
@@ -57,6 +61,7 @@ get_status_led() {
 	dir-505-a1 |\
 	dir-600-a1 |\
 	dir-615-e1 |\
+	dir-615-i1 |\
 	dir-615-e4)
 		status_led="d-link:green:power"
 		;;
@@ -69,6 +74,12 @@ get_status_led() {
 	dir-825-c1 |\
 	dir-835-a1)
 		status_led="d-link:amber:power"
+		;;
+	dlan-pro-500-wp)
+		status_led="devolo:green:wlan-2g"
+		;;
+	dlan-pro-1200-ac)
+		status_led="devolo:status:wlan"
 		;;
 	dragino2)
 		status_led="dragino2:red:system"
