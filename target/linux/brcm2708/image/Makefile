@@ -23,7 +23,7 @@ endif
 
 ### Image scripts ###
 define Build/build-dtb
-	$(LINUX_DIR)/scripts/dtc/dtc -O dtb -o $@.dtb $(DTS_DIR)/$(DEVICE_DTS).dts
+	$(call Image/BuildDTB,$(DTS_DIR)/$(DEVICE_DTS).dts,$@.dtb)
 endef
 
 define Build/gen-cfg
@@ -61,10 +61,9 @@ define Device/Default
   IMAGES := sdcard.bin
   IMAGE/sdcard.bin := build-dtb | gen-cfg | boot-img | sdcard-img
   DEVICE_PROFILE :=
-  DEVICE_NAME :=
   DEVICE_DTS :=
 endef
-DEVICE_VARS += DEVICE_PROFILE DEVICE_NAME DEVICE_DTS
+DEVICE_VARS += DEVICE_PROFILE DEVICE_DTS
 
 # $(1) = profile
 # $(2) = image name
@@ -72,7 +71,6 @@ DEVICE_VARS += DEVICE_PROFILE DEVICE_NAME DEVICE_DTS
 define add_bcm2708
   define Device/$(2)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
   endef
   TARGET_DEVICES += $(2)

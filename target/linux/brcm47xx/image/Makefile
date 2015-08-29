@@ -126,22 +126,13 @@ define Build/linksys-bin
 	mv $@.new $@
 endef
 
-define Build/netgear-chk
-	$(STAGING_DIR_HOST)/bin/mkchkimg \
-		-o $@.new \
-		-k $@ \
-		-b $(BOARD_ID) \
-		-r $(REGION)
-	mv $@.new $@
-endef
-
 #################################################
 # Devices
 #################################################
 
 DEVICE_VARS += PRODUCTID
 DEVICE_VARS += DEVICE_ID VERSION
-DEVICE_VARS += BOARD_ID REGION
+DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_REGION
 
 define Device/Default
 	KERNEL := kernel-bin
@@ -187,8 +178,8 @@ endef
 define NetgearDevice
   define Device/netgear-$(1)
 	$$(Device/netgear)
-	BOARD_ID := $(2)
-	REGION := $(3)
+	NETGEAR_BOARD_ID := $(2)
+	NETGEAR_REGION := $(3)
   endef
   TARGET_DEVICES += netgear-$(1)
 endef
@@ -315,7 +306,7 @@ ifeq ($(SUBTARGET),mips74k)
   $(eval $(call LinksysDevice,e900-v1,E900,1.0.4))
   $(eval $(call LinksysDevice,e1000-v1-v2-v2.1,E100,1.1.3))
   $(eval $(call LinksysDevice,e1200-v1,E120,1.0.3))
-  $(eval $(call LinksysDevice,e1200-v2-new,E122,1.0.4))
+  $(eval $(call LinksysDevice,e1200-v2,E122,1.0.4))
   $(eval $(call LinksysDevice,e1500-v1,E150,1.0.5))
   $(eval $(call LinksysDevice,e1550-v1,1550,1.0.3))
   $(eval $(call LinksysDevice,e2000-v1,32XN,1.0.4))

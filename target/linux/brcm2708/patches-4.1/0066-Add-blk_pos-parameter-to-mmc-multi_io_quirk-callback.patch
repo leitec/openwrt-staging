@@ -1,7 +1,7 @@
-From 510eb2621d1b1b74618236a324538c19c9106ece Mon Sep 17 00:00:00 2001
+From 3394c3b27330d5d20e11d02210b4e63a53cd22e0 Mon Sep 17 00:00:00 2001
 From: Phil Elwell <phil@raspberrypi.org>
 Date: Fri, 17 Apr 2015 19:30:22 +0100
-Subject: [PATCH 066/121] Add blk_pos parameter to mmc multi_io_quirk callback
+Subject: [PATCH 066/148] Add blk_pos parameter to mmc multi_io_quirk callback
 
 ---
  drivers/mmc/card/block.c          | 1 +
@@ -13,7 +13,7 @@ Subject: [PATCH 066/121] Add blk_pos parameter to mmc multi_io_quirk callback
 
 --- a/drivers/mmc/card/block.c
 +++ b/drivers/mmc/card/block.c
-@@ -1413,6 +1413,7 @@ static void mmc_blk_rw_rq_prep(struct mm
+@@ -1415,6 +1415,7 @@ static void mmc_blk_rw_rq_prep(struct mm
  			brq->data.blocks = card->host->ops->multi_io_quirk(card,
  						(rq_data_dir(req) == READ) ?
  						MMC_DATA_READ : MMC_DATA_WRITE,

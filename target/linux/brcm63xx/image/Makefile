@@ -38,11 +38,6 @@ define Build/append-dtb
 	cat $@.dtb >> $@
 endef
 
-define Build/gzip
-	gzip -9 -c $@ > $@.gz
-	mv $@.gz $@
-endef
-
 define Build/hcs-initramfs
 	$(STAGING_DIR_HOST)/bin/hcsmakeimage --magic_bytes=$(HCS_MAGIC_BYTES) \
 		--rev_maj=$(HCS_REV_MAJ) --rev_min=$(HCS_REV_MIN) --input_file=$@ \
@@ -136,12 +131,6 @@ define Build/cfe-spw303v-bin
 		$(CFE_EXTRAS)
 endef
 
-define Build/netgear-chk
-	$(STAGING_DIR_HOST)/bin/mkchkimg -o $@.netgear -k $@ \
-	-b $(NETGEAR_ID) -r $(NETGEAR_REGION)
-	mv $@.netgear $@
-endef
-
 define Build/spw303v-bin
 	$(STAGING_DIR_HOST)/bin/spw303v -i $@ -o $@.spw303v
 	mv $@.spw303v $@
@@ -181,10 +170,9 @@ define Device/Default
   PROFILES = Default $$(DEVICE_PROFILE)
   KERNEL_INITRAMFS_IMAGE = $$(KERNEL_INITRAMFS_PREFIX).elf
   DEVICE_PROFILE :=
-  DEVICE_NAME :=
   DEVICE_DTS :=
 endef
-DEVICE_VARS += DEVICE_PROFILE DEVICE_NAME DEVICE_DTS
+DEVICE_VARS += DEVICE_PROFILE DEVICE_DTS
 
 # BCM33xx HCS devices: only generates ramdisks (unsupported bin images)
 define Device/bcm33xxHcsRamdisk
@@ -257,10 +245,10 @@ define Device/bcm63xxCfeNetgear
   CFE_BOARD_ID :=
   CFE_CHIP_ID :=
   CFE_EXTRAS :=
-  NETGEAR_ID :=
+  NETGEAR_BOARD_ID :=
   NETGEAR_REGION :=
 endef
-DEVICE_VARS += NETGEAR_ID NETGEAR_REGION
+DEVICE_VARS += NETGEAR_BOARD_ID NETGEAR_REGION
 
 # BCM63xx Old CFE devices: both ramdisks and parallel/spi bin images
 # Old versions of CFE bootloader not compatible with imagetag
@@ -319,7 +307,6 @@ define bcm33xxHcsRamdisk
   define Device/$(2)
     $$(Device/bcm33xxHcsRamdisk)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     HCS_MAGIC_BYTES := $(4)
     HCS_REV_MIN := $(5)
@@ -335,7 +322,6 @@ define bcm63xxCfeRamdisk
   define Device/$(2)
     $$(Device/bcm63xxCfeRamdisk)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
   endef
   TARGET_DEVICES += $(2)
@@ -351,7 +337,6 @@ define bcm63xxCfe
   define Device/$(2)
     $$(Device/bcm63xxCfe)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
@@ -370,7 +355,6 @@ define bcm63xxCfeMultiFlash
   define Device/$(2)
     $$(Device/bcm63xxCfeMultiFlash)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
@@ -389,7 +373,6 @@ define bcm63xxCfeBc221
   define Device/$(2)
     $$(Device/bcm63xxCfeBc221)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
@@ -410,12 +393,11 @@ define bcm63xxCfeNetgear
   define Device/$(2)
     $$(Device/bcm63xxCfeNetgear)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
     CFE_EXTRAS := $(6)
-    NETGEAR_ID := $(7)
+    NETGEAR_BOARD_ID := $(7)
     NETGEAR_REGION := $(8)
   endef
   TARGET_DEVICES += $(2)
@@ -431,7 +413,6 @@ define bcm63xxCfeOld
   define Device/$(2)
     $$(Device/bcm63xxCfeOld)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
@@ -450,7 +431,6 @@ define bcm63xxCfeSpw303v
   define Device/$(2)
     $$(Device/bcm63xxCfeSpw303v)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
@@ -469,7 +449,6 @@ define bcm63xxCfeZyxel
   define Device/$(2)
     $$(Device/bcm63xxCfeZyxel)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
     CFE_BOARD_ID := $(4)
     CFE_CHIP_ID := $(5)
@@ -485,7 +464,6 @@ define bcm63xxRedBoot
   define Device/$(2)
     $$(Device/bcm63xxRedBoot)
     DEVICE_PROFILE := $(1)
-    DEVICE_NAME := $(2)
     DEVICE_DTS := $(3)
   endef
   TARGET_DEVICES += $(2)
@@ -573,7 +551,7 @@ $(eval $(call bcm63xxCfe,DSL274XB_C,DSL274XB-C3,dsl-274xb-c,AW4139,6358))
 $(eval $(call bcm63xxCfe,DSL274XB_F,DSL274XB-F1-EU,dsl-274xb-f,AW4339U,6328,--signature2 "4.06.01.EUF1" --pad 4))
 $(eval $(call bcm63xxCfe,DSL274XB_F,DSL274XB-F1-AU,dsl-274xb-f,AW4339U,6328,--signature2 "4.06.01.AUF1" --pad 4))
 # D-Link DSL-2750B/DSL-2751, rev D1
-$(eval $(call bcm63xxCfeRamdisk,DSL275XB_D,DSL275XB-D1,dsl-275xb-d,AW5200U,6318,--pad 4))
+$(eval $(call bcm63xxCfe,DSL275XB_D,DSL275XB-D1,dsl-275xb-d,AW5200B,6318,--pad 4))
 # D-Link DVA-G3810BN/TL
 $(eval $(call bcm63xxCfe,DVAG3810BN,DVAG3810BN,dva-g3810bn_tl,96358VW,6358))
 # Davolink DV-201AMR
@@ -623,6 +601,8 @@ $(eval $(call bcm63xxCfe,FAST2404,F@ST2404,fast2404,F@ST2404,6348))
 $(eval $(call bcm63xxCfe,FAST2504n,F@ST2504n,fast2504n,F@ST2504n,6362))
 # Sagem F@ST2604
 $(eval $(call bcm63xxCfe,FAST2604,F@ST2604,fast2604,F@ST2604,6348))
+# Sagem F@ST2704N V1 / Plusnet F@ST2704N V1
+$(eval $(call bcm63xxCfe,FAST2704N,FAST2704N,fast2704n,F@ST2704N,6318,--pad 4))
 # Sagem F@ST2704V2
 $(eval $(call bcm63xxCfe,FAST2704V2,F@ST2704V2,fast2704v2,F@ST2704V2,6328))
 # SFR Neufbox 4
