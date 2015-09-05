@@ -30,8 +30,8 @@ define Profile/EA3500/Description
  Package set compatible with Linksys EA3500 board.
 endef
 
-EA3500_UBIFS_OPTS:="-m 512 -e 15872 -c 4096"
-EA3500_UBI_OPTS:="-m 512 -p 16384 -s 256"
+#EA3500_UBIFS_OPTS:="-m 512 -e 15872 -c 4096"
+#EA3500_UBI_OPTS:="-m 512 -p 16384 -s 256"
 
 $(eval $(call Profile,EA3500))
 
@@ -46,7 +46,7 @@ define Profile/EA4500/Description
  Package set compatible with Linksys EA4500 board.
 endef
 
-EA4500_UBIFS_OPTS:="-m 2048 -e 126KiB -c 4096"
-EA4500_UBI_OPTS:="-m 2048 -p 128KiB -s 512"
+#EA4500_UBIFS_OPTS:="-m 2048 -e 126KiB -c 4096"
+#EA4500_UBI_OPTS:="-m 2048 -p 128KiB -s 512"
 
 $(eval $(call Profile,EA4500))
