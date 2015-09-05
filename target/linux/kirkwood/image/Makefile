@@ -55,5 +55,10 @@ define sanitize_profile_name
 $(shell echo $(PROFILE) | tr '[:upper:]' '[:lower:]')
 endef
 
+define Image/mkfs/targz
+	$(TAR) -czpf $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-rootfs.tar.gz --numeric-owner --owner=0 --group=0 -C $(TARGET_DIR)/ .
+endef
+
+
 $(eval TARGET_DEVICES += $(call sanitize_profile_name))
 $(eval $(call BuildImage))
