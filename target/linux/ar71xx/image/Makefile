@@ -372,19 +372,19 @@ endef
 TARGET_DEVICES += archer-c5-v1 archer-c7-v1 archer-c7-v2
 
 define Device/antminer-s1
-	$(Device/tplink-8mlzma)
-	BOARDNAME := ANTMINER-S1
-	DEVICE_PROFILE := ANTMINER_S1
-	TPLINK_HWID := 0x04440001
-	CONSOLE := ttyATH0,115200
+    $(Device/tplink-8mlzma)
+    BOARDNAME := ANTMINER-S1
+    DEVICE_PROFILE := ANTMINERS1
+    TPLINK_HWID := 0x04440101
+    CONSOLE := ttyATH0,115200
 endef
 
 define Device/antminer-s3
-	$(Device/tplink-8mlzma)
-	BOARDNAME := ANTMINER-S3
-	DEVICE_PROFILE := ANTMINER_S3
-	TPLINK_HWID := 0x04440003
-	CONSOLE := ttyATH0,115200
+    $(Device/tplink-8mlzma)
+    BOARDNAME := ANTMINER-S3
+    DEVICE_PROFILE := ANTMINERS3
+    TPLINK_HWID := 0x04440301
+    CONSOLE := ttyATH0,115200
 endef
 
 define Device/el-m150
@@ -437,6 +437,15 @@ define Device/mc-mac1200r
     TPLINK_HWID := 0x12000001
 endef
 TARGET_DEVICES += mc-mac1200r
+
+define Device/minibox-v1
+    $(Device/tplink-16mlzma)
+    BOARDNAME := MINIBOX-V1
+    DEVICE_PROFILE := MINIBOXV1
+    TPLINK_HWID := 0x3C000201
+    CONSOLE := ttyATH0,115200
+endef
+TARGET_DEVICES += minibox-v1
 
 define Device/onion-omega
     $(Device/tplink-16mlzma)
@@ -695,6 +704,13 @@ define Device/tl-wr841n-v9
     TPLINK_HWID := 0x08410009
 endef
 
+define Device/tl-wr841n-v10
+    $(Device/tplink-4mlzma)
+    BOARDNAME := TL-WR841N-v9
+    DEVICE_PROFILE := TLWR841
+    TPLINK_HWID := 0x08410010
+endef
+
 define Device/tl-wr842n-v1
     $(Device/tplink-8m)
     BOARDNAME := TL-MR3420
@@ -722,7 +738,7 @@ define Device/tl-wr847n-v8
     DEVICE_PROFILE := TLWR841
     TPLINK_HWID := 0x08470008
 endef
-TARGET_DEVICES += tl-wr841nd-v3 tl-wr841nd-v5 tl-wr841nd-v7 tl-wr841n-v8 tl-wr841n-v9 tl-wr842n-v1 tl-wr842n-v2 tl-wr843nd-v1 tl-wr847n-v8
+TARGET_DEVICES += tl-wr841nd-v3 tl-wr841nd-v5 tl-wr841nd-v7 tl-wr841n-v8 tl-wr841n-v9 tl-wr841n-v10 tl-wr842n-v1 tl-wr842n-v2 tl-wr843nd-v1 tl-wr847n-v8
 
 define Device/tl-wr941nd-v2
     $(Device/tplink-4m)
