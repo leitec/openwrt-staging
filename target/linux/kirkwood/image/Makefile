@@ -11,10 +11,6 @@ KDIR_TMP:=$(KDIR)/tmp
 include $(TOPDIR)/rules.mk
 include $(INCLUDE_DIR)/image.mk
 
-define sanitize_profile_name
-$(shell echo $(PROFILE) | tr '[:upper:]' '[:lower:]')
-endef
-
 define Image/BuildKernel/Template
 
 	$(CP) $(KDIR)/zImage $(BIN_DIR)/$(IMG_PREFIX)-zImage
@@ -38,21 +34,21 @@ define Image/BuildKernel/Template
  ifneq ($(1),)
 	$(CP) $(DTS_DIR)/kirkwood-$(1).dtb $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb
 
-	$(CP) $(KDIR)/zImage $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage
-	cat $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb >> $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage
+	$(CP) $(KDIR)/zImage $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-zImage
+	cat $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb >> $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-zImage
 	$(call Image/BuildKernel/MkuImage, \
 		none, 0x8000, 0x8000, \
-		$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage, \
-		$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage \
+		$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-zImage, \
+		$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-uImage \
 	)
 
   ifneq ($(CONFIG_TARGET_ROOTFS_INITRAMFS),)
-	$(CP) $(KDIR)/zImage-initramfs $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage-initramfs
-	cat $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb >> $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage-initramfs
+	$(CP) $(KDIR)/zImage-initramfs $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-zImage-initramfs
+	cat $(BIN_DIR)/$(IMG_PREFIX)-$(1).dtb >> $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-zImage-initramfs
 	$(call Image/BuildKernel/MkuImage, \
 		none, 0x8000, 0x8000, \
-		$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-zImage-initramfs, \
-		$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage-initramfs \
+		$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-zImage-initramfs, \
+		$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-uImage-initramfs \
 	)
   endif
  endif
@@ -82,7 +78,7 @@ define Image/InstallKernel/Template
 endef
 
 define Image/Build/jffs2-nand-2048-128k
-	dd if=$(KDIR)/root.$(1) of=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img \
+	dd if=$(KDIR)/root.$(1) of=$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1).img \
 		bs=2048 conv=sync
 endef
 
@@ -91,10 +87,10 @@ define Image/Build/squashfs
 	( \
 		dd if=$(KDIR)/zImage bs=4096k conv=sync; \
 		dd if=$(KDIR)/root.$(1) bs=128k conv=sync; \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1).img
 
  ifneq ($($(PROFILE)_UBI_OPTS),)
-	$(call Image/Build/UbinizeImage,$(call sanitize_profile_name),,squashfs,$($(PROFILE)_UBI_OPTS))
+	$(call Image/Build/UbinizeImage,$(PROFILE_SANITIZED),,squashfs,$($(PROFILE)_UBI_OPTS))
  endif
 
 endef
@@ -105,20 +101,20 @@ endef
 
 define Image/mkfs/targz
 
-	$(TAR) -czpf $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-rootfs.tar.gz --numeric-owner --owner=0 --group=0 -C $(TARGET_DIR)/ .
+	$(TAR) -czpf $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-rootfs.tar.gz --numeric-owner --owner=0 --group=0 -C $(TARGET_DIR)/ .
 endef
 
 define Image/Build/ubifs
 
  ifneq ($($(PROFILE)_UBIFS_OPTS),)
-	$(CP) $(KDIR)/root.ubifs $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-rootfs.ubifs
+	$(CP) $(KDIR)/root.ubifs $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-rootfs.ubifs
  endif
 endef
 
 define Image/Build/ubi
 
  ifneq ($($(PROFILE)_UBI_OPTS),)
-	$(CP) $(KDIR)/root.ubi $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-rootfs.ubi
+	$(CP) $(KDIR)/root.ubi $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-rootfs.ubi
  endif
 endef
 
@@ -127,22 +123,22 @@ endef
 define Image/Build/Template/Linksys
 
  ifeq ($(1),ubifs)
-	$(call BuildSysupgrade,$(1),$(call sanitize_profile_name))
+	$(call BuildSysupgrade,$(1),$(PROFILE_SANITIZED))
  endif
 
  ifeq ($(1),squashfs)
-	$(call BuildSysupgrade,$(1),$(call sanitize_profile_name))
+	$(call BuildSysupgrade,$(1),$($PROFILE_SANITIZED))
 	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=$(2) conv=sync; \
-		dd if=$(KDIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-ubinized.bin; \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-uImage bs=$(2) conv=sync; \
+		dd if=$(KDIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1)-ubinized.bin; \
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1)-factory.bin
  endif
 
  ifeq ($(1),ubi)
 	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=$(2) conv=sync; \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-uImage bs=$(2) conv=sync; \
 		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-factory.bin
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1)-factory.bin
  endif
 
 endef
@@ -156,9 +152,9 @@ define Image/Build/Template/DIR665
 
  ifeq ($(1),squashfs)
 	( \
-		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-uImage bs=1536k conv=sync; \
+		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-uImage bs=1536k conv=sync; \
 		dd if=$(KDIR)/root.$(1); \
-	) > $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1)-sysupgrade.bin
+	) > $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1)-sysupgrade.bin
  endif
 
 endef
@@ -215,7 +211,7 @@ endef
 define Image/Build
 	$(if $(Image/Build/$(1)), \
 		$(call Image/Build/$(1),$(1)), \
-		$(CP) $(KDIR)/root.$(1) $(BIN_DIR)/$(IMG_PREFIX)-$(call sanitize_profile_name)-$(1).img \
+		$(CP) $(KDIR)/root.$(1) $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1).img \
 	)
 
 	$(call Image/Build/Template/$(PROFILE),$(1))
