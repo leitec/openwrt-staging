@@ -1,32 +1,33 @@
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -147,6 +147,7 @@ dtb-$(CONFIG_MACH_KIRKWOOD) += kirkwood-
- 	kirkwood-openrd-base.dtb \
- 	kirkwood-openrd-client.dtb \
- 	kirkwood-openrd-ultimate.dtb \
-+	kirkwood-pogo_e02.dtb \
- 	kirkwood-rd88f6192.dtb \
- 	kirkwood-rd88f6281-z0.dtb \
- 	kirkwood-rd88f6281-a.dtb \
+@@ -160,6 +160,7 @@ dtb-$(CONFIG_MACH_KIRKWOOD) += \
+ 	kirkwood-ds411slim.dtb \
+ 	kirkwood-ea3500.dtb \
+ 	kirkwood-ea4500.dtb \
++	kirkwood-goflexhome.dtb \
+ 	kirkwood-goflexnet.dtb \
+ 	kirkwood-guruplug-server-plus.dtb \
+ 	kirkwood-ib62x0.dtb \
 --- /dev/null
-+++ b/arch/arm/boot/dts/kirkwood-pogo_e02.dts
-@@ -0,0 +1,114 @@
++++ b/arch/arm/boot/dts/kirkwood-goflexhome.dts
+@@ -0,0 +1,127 @@
 +/dts-v1/;
 +
 +#include "kirkwood.dtsi"
 +#include "kirkwood-6281.dtsi"
 +
 +/ {
-+	model = "Cloud Engines Pogoplug E02";
-+	compatible = "cloudengines,pogoe02", "marvell,kirkwood-88f6281", "marvell,kirkwood";
++	model = "Seagate GoFlex Home";
++	compatible = "seagate,goflexhome", "marvell,kirkwood-88f6281", "marvell,kirkwood";
 +
 +	memory {
 +		device_type = "memory";
-+		reg = <0x00000000 0x10000000>;
++		reg = <0x00000000 0x8000000>;
 +	};
 +
 +	chosen {
-+		bootargs = "console=ttyS0,115200n8 earlyprintk";
++		bootargs = "console=ttyS0,115200n8 earlyprintk root=/dev/sda1 rootdelay=10";
++		stdout-path = &uart0;
 +	};
 +
 +	ocp@f1000000 {
@@ -35,33 +36,45 @@
 +				marvell,pins = "mpp29";
 +				marvell,function = "gpio";
 +			};
-+			pmx_led_green: pmx-led_green {
-+				marvell,pins = "mpp48";
++			pmx_led_white: pmx-led-white {
++				marvell,pins = "mpp40";
 +				marvell,function = "gpio";
 +			};
-+			pmx_led_orange: pmx-led_orange {
-+				marvell,pins = "mpp49";
++			pmx_led_green: pmx-led_green {
++				marvell,pins = "mpp46";
++				marvell,function = "gpio";
++			};
++			pmx_led_orange: pmx-led-orange {
++				marvell,pins = "mpp47";
 +				marvell,function = "gpio";
 +			};
 +		};
 +		serial@12000 {
 +			status = "ok";
 +		};
++
++		sata@80000 {
++			status = "okay";
++			nr-ports = <2>;
++		};
++
 +	};
 +	gpio-leds {
 +		compatible = "gpio-leds";
-+		pinctrl-0 = < &pmx_usb_power_enable &pmx_led_orange
-+			      &pmx_led_green >;
-+		pinctrl-names = "default";
 +
 +		health {
-+			label = "pogo_e02:green:health";
-+			gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
-+			default-state = "keep";
++			label = "status:green:health";
++			gpios = <&gpio1 14 1>;
++			linux,default-trigger = "default-on";
 +		};
 +		fault {
-+			label = "pogo_e02:orange:fault";
-+			gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
++			label = "status:orange:fault";
++			gpios = <&gpio1 15 1>;
++		};
++		misc {
++			label = "status:white:misc";
++			gpios = <&gpio1 8 1>;
++			linux,default-trigger = "ide-disk";
 +		};
 +	};
 +	regulators {
@@ -107,7 +120,7 @@
 +
 +	partition@2500000 {
 +		label = "root";
-+		reg = <0x02500000 0x5b00000>;
++		reg = <0x02500000 0xd800000>;
 +	};
 +};
 +
