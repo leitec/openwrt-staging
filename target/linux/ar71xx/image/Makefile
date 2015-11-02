@@ -334,6 +334,8 @@ TARGET_DEVICES += tl-wdr3500-v1 tl-wdr3600-v1 tl-wdr4300-v1 tl-wdr4300-v1-il tl-
 
 define Device/tl-wdr6500-v2
 $(Device/tplink-8mlzma)
+  KERNEL := kernel-bin | patch-cmdline | lzma | uImage lzma
+  KERNEL_INITRAMFS := kernel-bin | patch-cmdline | lzma | uImage lzma | mktplinkfw-initramfs
   BOARDNAME = TL-WDR6500-v2
   DEVICE_PROFILE = TLWDR6500V2
   TPLINK_HWID := 0x65000002
@@ -370,7 +372,14 @@ define Device/archer-c7-v2
     DEVICE_PROFILE := ARCHERC7
     TPLINK_HWID := 0xc7000002
 endef
-TARGET_DEVICES += archer-c5-v1 archer-c7-v1 archer-c7-v2
+
+define Device/tl-wdr7500-v3
+    $(Device/tplink-8mlzma)
+    BOARDNAME := ARCHER-C7
+    DEVICE_PROFILE := ARCHERC7
+    TPLINK_HWID := 0x75000003
+endef
+TARGET_DEVICES += archer-c5-v1 archer-c7-v1 archer-c7-v2 tl-wdr7500-v3
 
 define Device/antminer-s1
     $(Device/tplink-8mlzma)
