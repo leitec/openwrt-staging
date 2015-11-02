@@ -99,11 +99,6 @@ define BuildSysupgrade
 	$(call Image/Build/SysupgradeNAND,$(2),$(1),$(BIN_DIR)/$(IMG_PREFIX)-$(2)-uImage)
 endef
 
-define Image/mkfs/targz
-
-	$(TAR) -czpf $(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-rootfs.tar.gz --numeric-owner --owner=0 --group=0 -C $(TARGET_DIR)/ .
-endef
-
 define Image/Build/ubifs
 
  ifneq ($($(PROFILE)_UBIFS_OPTS),)
