@@ -122,7 +122,7 @@ define Image/Build/Template/Linksys
  endif
 
  ifeq ($(1),squashfs)
-	$(call BuildSysupgrade,$(1),$($PROFILE_SANITIZED))
+	$(call BuildSysupgrade,$(1),$(PROFILE_SANITIZED))
 	( \
 		dd if=$(BIN_DIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-uImage bs=$(2) conv=sync; \
 		dd if=$(KDIR)/$(IMG_PREFIX)-$(PROFILE_SANITIZED)-$(1)-ubinized.bin; \
