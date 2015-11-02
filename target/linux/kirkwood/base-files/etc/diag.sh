@@ -8,12 +8,14 @@ get_status_led() {
 	case $(kirkwood_board_name) in
 	dockstar|\
 	goflexhome|\
-	goflexnet|\
-	pogo_e02)
+	goflexnet)
 		status_led="status:orange:fault"
 		;;
 	ea4500)
 		status_led="ea4500:white:health"
+		;;
+	pogo_e02)
+		status_led="pogo_e02:orange:fault"
 		;;
 	esac
 }
