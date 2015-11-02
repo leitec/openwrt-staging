@@ -12,7 +12,7 @@ preinit_set_mac_address() {
 	case $(kirkwood_board_name) in
 	"dir665")
 		lan_mac=$(cat /sys/class/net/eth0/address)
-                wan_mac=$(macaddr_add "$lan_mac" 1)
+		wan_mac=$(macaddr_add "$lan_mac" 1)
 
 		ifconfig eth1 hw ether $wan_mac 2>/dev/null
 		;;
