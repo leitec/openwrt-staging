@@ -12,6 +12,9 @@ get_status_led() {
 	pogo_e02)
 		status_led="status:orange:fault"
 		;;
+	ea3500)
+		status_led="ea3500:green:power"
+		;;
 	ea4500)
 		status_led="ea4500:white:health"
 		;;
