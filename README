@@ -27,6 +27,7 @@ To build your own firmware you need to have access to a Linux, BSD or MacOSX sys
 (case-sensitive filesystem required). Cygwin will not be supported because of
 the lack of case sensitiveness in the file system.
 
+To setup the your development environment please check the documentation available on OPENWRT [website](https://wiki.openwrt.org/doc/howto/buildroot.exigence)
 
 Sunshine!
 	Your OpenWrt Project
